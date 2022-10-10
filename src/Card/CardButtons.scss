@@ -1,0 +1,23 @@
+
+#layout{
+    padding: "0.5vh 0em 0em 0em";
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2em;
+    grid-auto-rows: 1fr; 
+    margin-top: 1em;
+    //border: 1px solid blue; 
+}
+
+#card-draw{
+    grid-column: 0/1; 
+
+}
+
+#card-delete{
+    grid-column: 1/2; 
+}
+
+#ard-edit{
+    grid-column: 2/3; 
+}

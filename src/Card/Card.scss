@@ -1,0 +1,25 @@
+.hello{
+    
+    //margin: 1vh; 
+    padding: 2%;
+    border-left: 0.3em solid orange;
+   
+}
+
+
+textarea{
+    border:none;
+    background: inherit;
+    display: block;
+    width: 80%;
+   
+   
+}
+
+textarea:disabled{
+     
+    resize: none;
+    color: black;  
+}
+
+
