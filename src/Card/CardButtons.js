@@ -1,12 +1,8 @@
 import React from 'react'; 
 import './CardButtons.scss'; 
 
-class CardButtons extends React.Component{
-    constructor(props){
-        super(props); 
-        this.state = {}; 
-    }
-    render(){
+export function CardButtons(){
+    
         return(
             <div id = "layout" >
                 <button id=  "card-edit" className="btn btn-primary">Edit</button>
@@ -14,7 +10,7 @@ class CardButtons extends React.Component{
                 <button id = "card-draw" className="btn btn-success">Draw</button>
             </div>
         ); 
-    }
+    
 }
 
 export default CardButtons; 

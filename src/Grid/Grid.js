@@ -1,91 +1,95 @@
-import React from 'react'; 
+import React, {useState} from 'react'; 
 import Card from './../Card/Card.js'
 import './Grid.scss'; 
 import ShowPositionGrid from './PGrid';
 
-class Grid extends React.Component{
-    constructor(props){
-        super(props); 
-        this.state = {
-            gridWidth: parseInt(props.width, 10), 
-            gridHeight: parseInt(props.height,10), 
-            grid: [],
-            cachedCoordinates: [0,0,1],
-            showNotes: false,
-            gridNotes: []
-        }; 
-         
-        for(let i = 0; i < this.state.gridWidth * this.state.gridHeight; i++){ 
-            this.state = {...this.state, grid: [...this.state.grid, [this.getXY(i), 0]]}; 
-        }
+function Grid(props) {
+   
         
-        this.handleChange = this.handleChange.bind(this);  
-        this.returnNewGrid = this.returnNewGrid.bind(this);
-        this.getIndex = this.getIndex.bind(this);
-        this.isAllFilled = this.isAllFilled.bind(this); 
-    }
+        const [gridWidth, ] = useState(props.width);
+        const [gridHeight, ] = useState(props.height); 
+        const [grid, setGrid] = useState(loop(gridWidth, gridHeight)); 
+        const [cachedCoordinates, setCachedCoordinates] = useState([0,0,1]); 
+        const [showNotes, setShowNotes] = useState(false); 
+        const [gridNotes, setGridNotes] = useState([]);  
+        
     
-    getXY(index){
-        //XY like cartesian coordinates not like matrix coordinates
-        let result = [ index % this.state.gridWidth + 1, Math.floor(index/this.state.gridWidth) + 1]; 
-        //console.log(`${index} => (${result[0]}, ${result[1]})`);
-        return result; 
+         
+    
+    function loop(x,y){
+        let newGrid = []; 
+            for(let i = 0; i < x*y; i++){ 
+                 newGrid = [...newGrid, [getXY(i),0]]; 
+            }
+        return newGrid; 
     }
-    getIndex(x,y){
-        return (x-1) + (y-1) * this.state.gridWidth; 
+    function getXY(index){
+            //XY like cartesian coordinates not like matrix coordinates
+            let result = [ index % gridWidth + 1, Math.floor(index/gridWidth) + 1]; 
+            //console.log(`${index} => (${result[0]}, ${result[1]})`);
+            return result; 
     }
-    handleChange(x,y){
-        this.setState((state) => ({...state, 
-        grid: this.returnNewGrid(state,x,y), 
-        gridNotes: (state.cachedCoordinates[0] !== 0 && state.cachedCoordinates[1] !== 0)? [...state.gridNotes, [state.cachedCoordinates.slice(0,2),[x,y]]]:state.gridNotes,
-        cachedCoordinates: (state.cachedCoordinates[0] !== 0 && state.cachedCoordinates[1] !== 0)? [0,0,state.cachedCoordinates[2]+1] : [x,y, state.cachedCoordinates[2]]})); 
-        this.setState((state) => ({...state, showNotes: this.isAllFilled(state)}))
+    function getIndex(x,y){
+        return (x-1) + (y-1) * gridWidth; 
     }
-    isAllFilled(state){
-        for(let i = 0; i < state.gridHeight * state.gridWidth; i++){
-            if(state.grid[i][1] === 0) return false; 
+    function handleChange(x,y){
+
+        
+        setGrid(returnNewGrid(x,y)); 
+        if(cachedCoordinates[0] !== 0 && cachedCoordinates[1] !== 0){
+            setGridNotes([...gridNotes, [cachedCoordinates.slice(0,2), [x,y]]]); 
+            setCachedCoordinates([0,0,cachedCoordinates[2]+1]);
+        }
+        else{
+            setCachedCoordinates([x,y,cachedCoordinates[2]]);
+        }
+        setShowNotes(isAllFilled());
+    }
+    function isAllFilled(){
+        for(let i = 0; i < gridHeight * gridWidth; i++){
+            if(grid[i][1] === 0) return false; 
         }
         return true; 
     }
 
-    returnNewGrid(state, givenX, givenY){
-        console.log(`${givenX} , ${givenY}, ${state.cachedCoordinates}`);
-        if(state.cachedCoordinates[0] === 0 && state.cachedCoordinates[1] === 0){
-            return state.grid; 
+    function returnNewGrid(givenX, givenY){
+        console.log(`${givenX} , ${givenY}, ${cachedCoordinates}`);
+        if(cachedCoordinates[0] === 0 && cachedCoordinates[1] === 0){
+            return grid; 
         }
         else{
-            let newGrid = state.grid; 
-            for(let y = state.cachedCoordinates[1]; y <= givenY ; y++){
-                for(let x = state.cachedCoordinates[0]; x <= givenX; x++){   
-                    newGrid[this.getIndex(x,y)] = [[x,y], state.cachedCoordinates[2]]; 
+            let newGrid = grid; 
+            for(let y = cachedCoordinates[1]; y <= givenY ; y++){
+                for(let x = cachedCoordinates[0]; x <= givenX; x++){   
+                    newGrid[getIndex(x,y)] = [[x,y], cachedCoordinates[2]]; 
                 }
                 
             }
             return newGrid; 
         }
     }
-    render(){
-        let styleA = {gridGap: '1rem', display: 'grid', gridTemplateColumns: `repeat(${this.state.gridWidth}, 1fr)`, gridTemplateRows: `repeat(${this.state.gridHeight}, 1fr)`}; 
-        return (
+
+    const styleA = {gridGap: '1rem', display: 'grid', gridTemplateColumns: `repeat(${gridWidth}, 1fr)`, gridTemplateRows: `repeat(${gridHeight}, 1fr)`}; 
+    return (
             <div >
                 {   
-                    !this.state.showNotes && 
+                    !showNotes && 
                     <div className="gridcontainer p-5 " style={styleA}>
-                    {this.state.grid.map( (val) => ( 
-                            <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={this.handleChange} key={`${val[0]}`}  ></ShowPositionGrid>  
+                    {grid.map( (val) => ( 
+                            <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={handleChange} key={`${val[0]}`}  ></ShowPositionGrid>  
                     ))} 
                     </div>
                 }
                 {
-                    this.state.showNotes && 
+                    showNotes && 
                     <div className="gridcontainer p-5" style={styleA}>
-                    {this.state.gridNotes.map( (val) => 
+                    {gridNotes.map( (val) => 
                     <Card gridColumn={`${val[0][0]}/${val[1][0]+1}`} gridRow={`${val[0][1]}/${val[1][1]+1}`} key={`${val}`}></Card>)}
                    </div>
                 }
             </div>
         ); 
-    }
+   
 }
 
 export default Grid; 
