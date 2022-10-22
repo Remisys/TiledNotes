@@ -1,8 +1,15 @@
 ## Tiling Notes
 
-If you are familiar with windows tiling manager, than this would be similar to that but this one is for notes rather than for desktop applications.
-I made this with the help of React and also Bootstrap. 
+If You are familiar with windows tiling manager, than this would be similar to that but this one is for notes rather than for desktop applications.
+I made this with the help of React and also TailwindCSS. 
+
+### Features
+- Customizable Layout
+- On The Web
+- Nice Design
+
+More features coming soon!
 
 
-![screenshot 1](./public/Screenshot_1.png)
-![screenshot 2](./public/Screenshot_2.png)
+![screenshot 1](./public/NewScreenshot.png)
+![screenshot 2](./public/NewScreenshot2.png)

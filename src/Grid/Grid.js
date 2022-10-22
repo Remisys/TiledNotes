@@ -12,9 +12,7 @@ function Grid(props) {
         const [cachedCoordinates, setCachedCoordinates] = useState([0,0,1]); 
         const [showNotes, setShowNotes] = useState(false); 
         const [gridNotes, setGridNotes] = useState([]);  
-        
-    
-         
+                 
     
     function loop(x,y){
         let newGrid = []; 
@@ -24,9 +22,7 @@ function Grid(props) {
         return newGrid; 
     }
     function getXY(index){
-            //XY like cartesian coordinates not like matrix coordinates
             let result = [ index % gridWidth + 1, Math.floor(index/gridWidth) + 1]; 
-            //console.log(`${index} => (${result[0]}, ${result[1]})`);
             return result; 
     }
     function getIndex(x,y){
@@ -74,7 +70,7 @@ function Grid(props) {
             <div >
                 {   
                     !showNotes && 
-                    <div className="gridcontainer p-5 " style={styleA}>
+                    <div className="p-5" style={styleA}>
                     {grid.map( (val) => ( 
                             <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={handleChange} key={`${val[0]}`}  ></ShowPositionGrid>  
                     ))} 
@@ -82,7 +78,7 @@ function Grid(props) {
                 }
                 {
                     showNotes && 
-                    <div className="gridcontainer p-5" style={styleA}>
+                    <div className="p-5" style={styleA}>
                     {gridNotes.map( (val) => 
                     <Card gridColumn={`${val[0][0]}/${val[1][0]+1}`} gridRow={`${val[0][1]}/${val[1][1]+1}`} key={`${val}`}></Card>)}
                    </div>

@@ -1,4 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 import React, {useState} from 'react'; 
 import './App.scss';
 import Grid from './Grid/Grid.js'
@@ -15,15 +15,35 @@ function App(props){
   
   
   return (
-    <div className="App">
-      
-        {cards.map((x) =>(<Grid width={4} height={4} key={x.id}/>))}
-      
-      <div className="explore p-5 ">
-        <button className="btn btn-primary" onClick={handleClickNew} >+ New</button>
-        <button className="btn btn-success" > Save</button>
-        <button className="btn btn-danger" >- Delete</button>
-        <button className="btn btn-light" onClick={handleClickEdit}>Settings</button>
+    <div className="flex flex-col items-center text-white  justify-center h-screen">
+      <div className="m-10 flex flex-col items-center w-[100%] overflow-y-auto">
+      <div className="bg-inherit flex flex-col fixed top-0 left-0 w-[100%] max-h-[150px] md:max-h-[175px] xl:max-h-[200px] z-40 ">
+       <svg preserveAspectRatio='none'  viewBox="0 0 400 200" >
+       <linearGradient  id="a">
+        <stop offset="0%" stopColor="#FF0031" />
+       
+        <stop offset="50%" stopColor="#FF7800" />
+       
+        <stop offset="100%" stopColor="#FFCD00" />
+        
+            </linearGradient> 
+          <path d="M 0,130 L 400,200 L 400,0 L 0,0 Z" fill="url(#a)"></path>
+         
+       </svg>
+       
+      </div>
+      <div className=" flex flex-col items-center  mt-10  fixed top-0 left-0 w-[100%] max-h-[150px] md:max-h-[175px] xl:max-h-[200px] z-50">
+        <p className="text-4xl font-mono  ">Tiling Notes</p>
+      </div>
+      <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[20px] w-[90%] max-w-[800px]">
+        {cards.map((x) =>(<Grid  width={4} height={4} key={x.id}/>))}
+      </div>
+      </div>
+      <div className="flex flex-row  p-3  fixed left-0 bottom-0 items-center justify-center w-[100%] z-2 bg-white border-t-2 border-t-sky-600">
+        <button className=" rounded-md bg-sky-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={handleClickNew} >+ New</button>
+        <button className="rounded-md bg-emerald-600 text-[18px] py-2 px-3 mx-2 whitespace-nowrap hover:scale-95" >✓ Save</button>
+        <button className="rounded-md bg-red-600 text-[18px] py-2 px-3 mx-2 whitespace-nowrap hover:scale-95" >- Delete</button>
+        <button className="rounded-md bg-slate-200 text-[18px] text-black py-2 px-3 mx-2 whitespace-nowrap hover:scale-95" onClick={handleClickEdit}>Settings</button>
       </div>
     </div>
     
