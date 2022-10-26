@@ -1,9 +1,9 @@
 import React, {useState} from 'react'; 
 import Card from './../Card/Card.js'
-import './Grid.scss'; 
+
 import ShowPositionGrid from './PGrid';
 
-function Grid(props) {
+export default function Grid(props) {
    
         
         const [gridWidth, ] = useState(props.width);
@@ -88,4 +88,3 @@ function Grid(props) {
    
 }
 
-export default Grid; 

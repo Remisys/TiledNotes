@@ -1,6 +1,7 @@
 
 import React, {useState} from 'react'; 
-import './App.scss';
+
+
 import Grid from './Grid/Grid.js'
 
 function App(props){
@@ -33,7 +34,7 @@ function App(props){
        
       </div>
       <div className=" flex flex-col items-center  mt-10  fixed top-0 left-0 w-[100%] max-h-[150px] md:max-h-[175px] xl:max-h-[200px] z-50">
-        <p className="text-4xl font-mono  ">Tiling Notes</p>
+        <p className="text-4xl font-mono  xl:mt-5 tracking-wider font-semibold">Tiling Notes</p>
       </div>
       <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[20px] w-[90%] max-w-[800px]">
         {cards.map((x) =>(<Grid  width={4} height={4} key={x.id}/>))}
