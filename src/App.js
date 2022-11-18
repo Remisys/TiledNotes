@@ -10,7 +10,7 @@ function App(props){
    
     const [cards,setCards] = useState([{header:"", content:"", id:0}]); 
     const [onEdit, setOnEdit] = useState(false); 
-    const [count, setCount] = useState(1); 
+    const [count, setCount] = useState(0); 
    
   
   
@@ -37,7 +37,7 @@ function App(props){
         <p className="text-4xl font-mono  xl:mt-5 tracking-wider font-semibold">Tiling Notes</p>
       </div>
       <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[20px] w-[90%] max-w-[800px]">
-        {cards.map((x) =>(<Grid  width={4} height={4} key={x.id}/>))}
+        {cards.map((x) =>(<Grid delete={deleteGrid} width={4} height={4} key={x.id} id={x.id}/>  ))}
       </div>
       </div>
       <div className="flex flex-row  p-3  fixed left-0 bottom-0 items-center justify-center w-[100%] z-2 bg-white border-t-2 border-t-sky-600">
@@ -51,12 +51,19 @@ function App(props){
   );
   
 
+  function deleteGrid(id){
+
+   setCards(cards.filter(x => x.id != id));
+  }
   function handleClickNew(){
     
-    setCount(count+1); 
+    
     setCards(cards.concat({header: "", content: "", id: count+1})); 
+    setCount(count+1);
   }
   
+ 
+
   function handleClickEdit(){
     
     setOnEdit(!onEdit); 

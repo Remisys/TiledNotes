@@ -67,7 +67,8 @@ export default function Grid(props) {
 
     const styleA = {gridGap: '1rem', display: 'grid', gridTemplateColumns: `repeat(${gridWidth}, 1fr)`, gridTemplateRows: `repeat(${gridHeight}, 1fr)`}; 
     return (
-            <div >
+            <div className='flex' >
+                <div className='grow'>
                 {   
                     !showNotes && 
                     <div className="p-5" style={styleA}>
@@ -83,6 +84,8 @@ export default function Grid(props) {
                     <Card gridColumn={`${val[0][0]}/${val[1][0]+1}`} gridRow={`${val[0][1]}/${val[1][1]+1}`} key={`${val}`}></Card>)}
                    </div>
                 }
+                </div>
+                <button className=' bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1]' onClick={() => props.delete(props.id)}>x</button>
             </div>
         ); 
    
