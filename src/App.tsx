@@ -1,19 +1,21 @@
 
-import React, {useState} from 'react'; 
+import React, {useState, useEffect} from 'react'; 
 
 
-import Grid from './Grid/Grid.js'
+import Grid from './Grid/Grid'
 
 function App(props){
  
     
    
-    const [cards,setCards] = useState([{header:"", content:"", id:0}]); 
+    const [cards,setCards] = useState([{content:[], id:0}]); 
     const [onEdit, setOnEdit] = useState(false); 
     const [count, setCount] = useState(0); 
    
-  
-  
+    
+    useEffect(() => {
+      localStorage.setItem("file", JSON.stringify(cards)); 
+    })
   
   return (
     <div className="flex flex-col items-center text-white  justify-center h-screen">
@@ -37,7 +39,7 @@ function App(props){
         <p className="text-4xl font-mono  xl:mt-5 tracking-wider font-semibold">Tiling Notes</p>
       </div>
       <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[20px] w-[90%] max-w-[800px]">
-        {cards.map((x) =>(<Grid delete={deleteGrid} width={4} height={4} key={x.id} id={x.id}/>  ))}
+        {cards.map((x) =>(<Grid delete={deleteGrid} width={4} height={4} key={x.id} id={x.id} init={initContent} /> ))}
       </div>
       </div>
       <div className="flex flex-row  p-3  fixed left-0 bottom-0 items-center justify-center w-[100%] z-2 bg-white border-t-2 border-t-sky-600">
@@ -52,14 +54,20 @@ function App(props){
   
 
   function deleteGrid(id){
-
+    
    setCards(cards.filter(x => x.id != id));
   }
+
+  function initContent(id, content){
+    console.log("ID : " + id);
+    let cardsLocal = [...cards];  
+    cardsLocal[id].content = content; 
+    setCards(cardsLocal); 
+  }
   function handleClickNew(){
-    
-    
-    setCards(cards.concat({header: "", content: "", id: count+1})); 
+    setCards(cards.concat({content:[], id: count+1})); 
     setCount(count+1);
+    
   }
   
  

@@ -1,5 +1,5 @@
-import React, {useState} from 'react'; 
-import Card from './../Card/Card.js'
+import React, {useState, useEffect} from 'react'; 
+import Card from '../Card/Card'
 
 import ShowPositionGrid from './PGrid';
 
@@ -12,7 +12,9 @@ export default function Grid(props) {
         const [cachedCoordinates, setCachedCoordinates] = useState([0,0,1]); 
         const [showNotes, setShowNotes] = useState(false); 
         const [gridNotes, setGridNotes] = useState([]);  
-                 
+        
+       
+       
     
     function loop(x,y){
         let newGrid = []; 
@@ -22,8 +24,8 @@ export default function Grid(props) {
         return newGrid; 
     }
     function getXY(index){
-            let result = [ index % gridWidth + 1, Math.floor(index/gridWidth) + 1]; 
-            return result; 
+        let result = [ index % gridWidth + 1, Math.floor(index/gridWidth) + 1]; 
+        return result; 
     }
     function getIndex(x,y){
         return (x-1) + (y-1) * gridWidth; 
@@ -35,6 +37,8 @@ export default function Grid(props) {
         if(cachedCoordinates[0] !== 0 && cachedCoordinates[1] !== 0){
             setGridNotes([...gridNotes, [cachedCoordinates.slice(0,2), [x,y]]]); 
             setCachedCoordinates([0,0,cachedCoordinates[2]+1]);
+            props.init(props.id, []);
+            
         }
         else{
             setCachedCoordinates([x,y,cachedCoordinates[2]]);
@@ -69,14 +73,6 @@ export default function Grid(props) {
     return (
             <div className='flex' >
                 <div className='grow'>
-                {   
-                    !showNotes && 
-                    <div className="p-5" style={styleA}>
-                    {grid.map( (val) => ( 
-                            <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={handleChange} key={`${val[0]}`}  ></ShowPositionGrid>  
-                    ))} 
-                    </div>
-                }
                 {
                     showNotes && 
                     <div className="p-5" style={styleA}>
@@ -84,8 +80,20 @@ export default function Grid(props) {
                     <Card gridColumn={`${val[0][0]}/${val[1][0]+1}`} gridRow={`${val[0][1]}/${val[1][1]+1}`} key={`${val}`}></Card>)}
                    </div>
                 }
+                {   
+                    
+                    !showNotes && 
+                    <div className="p-5" style={styleA}>
+                    {grid.map( (val) => ( 
+                            <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={handleChange} key={`${val[0]}`}  ></ShowPositionGrid>  
+                    ))} 
+                    </div>
+                }
+
+                
+                
                 </div>
-                <button className=' bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1]' onClick={() => props.delete(props.id)}>x</button>
+                <button className=' bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center' onClick={() => props.delete(props.id)}>X</button>
             </div>
         ); 
    
