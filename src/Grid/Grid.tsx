@@ -7,13 +7,13 @@ import ShowPositionGrid from './PGrid';
 
 export default function Grid(props) {
    
-        
+    const [gridNotes, setGridNotes] = useState<CardModel[]>(props.grid); 
         const [gridWidth, ] = useState(props.width);
         const [gridHeight, ] = useState(props.height); 
         const [grid, setGrid] = useState(loop(gridWidth, gridHeight)); 
         const [cachedCoordinates, setCachedCoordinates] = useState([0,0,1]); 
-        const [showNotes, setShowNotes] = useState(props.initialized); 
-        const [gridNotes, setGridNotes] = useState<CardModel[]>(props.grid);  
+        const [showNotes, setShowNotes] = useState(false); 
+         
         
        
     useEffect(() => {
@@ -23,8 +23,25 @@ export default function Grid(props) {
    
     function loop(x : number,y : number){
         let newGrid = []; 
-            for(let i = 0; i < x*y; i++){ 
-                 newGrid = [...newGrid, [getXY(i),0]]; 
+            for(let i = 0; i < x*y; i++){
+                const xTile = getXY(i)[0]; 
+                const yTile = getXY(i)[1];
+                let found = false;  
+                for(let j = 0; j <= gridNotes.length; j++){
+                   
+                    const note = gridNotes[j];
+                    if(note !== undefined){
+                        if(note.startPos[0] <= xTile && xTile <= note.endPos[0] && note.startPos[1] <= yTile && yTile <= note.endPos[1]){
+                            newGrid = [...newGrid,[[xTile, yTile], j+1]];
+                            found = true;         
+                            break;    
+                        }
+                    } 
+                } 
+                if(!found){
+                    newGrid = [...newGrid, [[xTile, yTile], 0]];
+                }
+                    
             }
         return newGrid; 
     }
@@ -86,7 +103,7 @@ export default function Grid(props) {
             <div className='flex' >
                 <div className='grow'>
                 {
-                    showNotes && 
+                    isAllFilled() && 
                     <div className="p-5" style={styleA}>
                     {gridNotes.map( (val,index) => 
                     <Card gridColumn={`${val.startPos[0]}/${val.endPos[0]+1}`} gridRow={`${val.startPos[1]}/${val.endPos[1]+1}`} key={`${val.startPos} ${val.endPos} ${props.file} ${index}` } id={index} card={val}  update={updateCard} ></Card>)}
@@ -95,7 +112,7 @@ export default function Grid(props) {
                 
                 {   
                     
-                    !showNotes && 
+                    !isAllFilled() && 
                     <div className="p-5" style={styleA}>
                     {grid.map( (val,index) => ( 
                             <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={handleChange} key={`${val[0]} ${index}`} ></ShowPositionGrid>  

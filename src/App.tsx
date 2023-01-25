@@ -37,12 +37,7 @@ function App(props){
       }
     }, [fileName])
 
-    useEffect(() => {
-      if(fileName !== null ){
-        localStorage.setItem(fileName, JSON.stringify(cards)); 
-      }
     
-    }, [cards])
   
   return (
     <div className="flex flex-col items-center text-white  justify-center h-screen">
@@ -71,11 +66,10 @@ function App(props){
       </div>
       <div className="flex flex-row  p-3  fixed left-0 bottom-0 items-center justify-center w-[100%] z-2 bg-white border-t-2 border-t-sky-600">
         <button className=" rounded-md bg-sky-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={handleClickNew} >+ New</button>
+        <button className=" rounded-md bg-green-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={(e) => {localStorage.setItem(fileName, JSON.stringify(cards))}} >Save</button>
         <input className=" border-b-2 border-green-700 text-[18px] py-2 px-3 mx-2 whitespace-nowrap text-black" value={fileName} placeholder="Your File"  onInput={(e) => {
+         
           setFileName((e.target as HTMLInputElement).value);
-          if(fileName !== null ){
-            localStorage.setItem(fileName, JSON.stringify(cards)); 
-          }
         }}></input>
         <button className=" rounded-md bg-red-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={(e) => {
           localStorage.removeItem(fileName);
@@ -108,12 +102,12 @@ function App(props){
     else{
       console.error(`Trying to access ${id} for list of size ${cardsLocal.length}`);
     }
-
+   
     
   }
   function handleClickNew(){
     setCards(cards.concat({content:[], id: cards.length})); 
-   
+    
     
   }
   
