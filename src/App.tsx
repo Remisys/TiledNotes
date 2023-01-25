@@ -1,21 +1,48 @@
 
 import React, {useState, useEffect} from 'react'; 
-
+import { isEqual } from 'lodash';
 
 import Grid from './Grid/Grid'
 
 function App(props){
  
     
-   
-    const [cards,setCards] = useState([{content:[], id:0}]); 
+    const [fileName, setFileName] = useState("file"); 
+
+    const [cards,setCards] = useState([]); 
     const [onEdit, setOnEdit] = useState(false); 
-    const [count, setCount] = useState(0); 
-   
+
     
+
     useEffect(() => {
-      localStorage.setItem("file", JSON.stringify(cards)); 
-    })
+      if(fileName !== ""){
+        let item = localStorage.getItem(fileName);
+        if(item !== null){
+          let parsedCards = JSON.parse(item);
+          if(isEqual(parsedCards, cards)=== false){
+            console.log(`${JSON.stringify(cards)} vs ${JSON.stringify(parsedCards)}` );
+            
+            setCards( parsedCards); 
+          }
+                     
+        }
+        else{
+          
+           
+            setCards([]);
+          
+        }
+        console.log(cards); 
+      
+      }
+    }, [fileName])
+
+    useEffect(() => {
+      if(fileName !== null ){
+        localStorage.setItem(fileName, JSON.stringify(cards)); 
+      }
+    
+    }, [cards])
   
   return (
     <div className="flex flex-col items-center text-white  justify-center h-screen">
@@ -39,13 +66,21 @@ function App(props){
         <p className="text-4xl font-mono  xl:mt-5 tracking-wider font-semibold">Tiling Notes</p>
       </div>
       <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[20px] w-[90%] max-w-[800px]">
-        {cards.map((x) =>(<Grid delete={deleteGrid} width={4} height={4} key={x.id} id={x.id} init={initContent} /> ))}
+        {cards.map((x) =>(<Grid grid={x.content} delete={deleteGrid} width={4} height={4} key={`${x.id} ${x.fileName}`} id={x.id} file={fileName} update={updateContent} initialized={x.content.length !== 0}/> ))}
       </div>
       </div>
       <div className="flex flex-row  p-3  fixed left-0 bottom-0 items-center justify-center w-[100%] z-2 bg-white border-t-2 border-t-sky-600">
         <button className=" rounded-md bg-sky-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={handleClickNew} >+ New</button>
-        <button className="rounded-md bg-emerald-600 text-[18px] py-2 px-3 mx-2 whitespace-nowrap hover:scale-95" >✓ Save</button>
-        <button className="rounded-md bg-red-600 text-[18px] py-2 px-3 mx-2 whitespace-nowrap hover:scale-95" >- Delete</button>
+        <input className=" border-b-2 border-green-700 text-[18px] py-2 px-3 mx-2 whitespace-nowrap text-black" value={fileName} placeholder="Your File"  onInput={(e) => {
+          setFileName((e.target as HTMLInputElement).value);
+          if(fileName !== null ){
+            localStorage.setItem(fileName, JSON.stringify(cards)); 
+          }
+        }}></input>
+        <button className=" rounded-md bg-red-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={(e) => {
+          localStorage.removeItem(fileName);
+          setCards([]);
+        }} >x Delete</button>
         <button className="rounded-md bg-slate-200 text-[18px] text-black py-2 px-3 mx-2 whitespace-nowrap hover:scale-95" onClick={handleClickEdit}>Settings</button>
       </div>
     </div>
@@ -54,26 +89,37 @@ function App(props){
   
 
   function deleteGrid(id){
-    
    setCards(cards.filter(x => x.id != id));
   }
 
-  function initContent(id, content){
-    console.log("ID : " + id);
+  function updateContent(id, content){
+   
     let cardsLocal = [...cards];  
-    cardsLocal[id].content = content; 
-    setCards(cardsLocal); 
+    if(id < cardsLocal.length){
+      if(cardsLocal[id] !== undefined){
+        cardsLocal[id].content = content; 
+        setCards(cardsLocal);
+      }
+      else{
+        console.error(`Undefined ${cardsLocal}`);
+      }
+   
+    }
+    else{
+      console.error(`Trying to access ${id} for list of size ${cardsLocal.length}`);
+    }
+
+    
   }
   function handleClickNew(){
-    setCards(cards.concat({content:[], id: count+1})); 
-    setCount(count+1);
+    setCards(cards.concat({content:[], id: cards.length})); 
+   
     
   }
   
  
 
   function handleClickEdit(){
-    
     setOnEdit(!onEdit); 
   }
 }

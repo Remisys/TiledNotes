@@ -12,24 +12,27 @@ export default function Grid(props) {
         const [gridHeight, ] = useState(props.height); 
         const [grid, setGrid] = useState(loop(gridWidth, gridHeight)); 
         const [cachedCoordinates, setCachedCoordinates] = useState([0,0,1]); 
-        const [showNotes, setShowNotes] = useState(false); 
-        const [gridNotes, setGridNotes] = useState<CardModel[]>([]);  
+        const [showNotes, setShowNotes] = useState(props.initialized); 
+        const [gridNotes, setGridNotes] = useState<CardModel[]>(props.grid);  
         
        
-       
-    
-    function loop(x,y){
+    useEffect(() => {
+        
+        props.update(props.id, gridNotes); 
+    },[gridNotes])  
+   
+    function loop(x : number,y : number){
         let newGrid = []; 
             for(let i = 0; i < x*y; i++){ 
                  newGrid = [...newGrid, [getXY(i),0]]; 
             }
         return newGrid; 
     }
-    function getXY(index){
+    function getXY(index : number){
         let result = [ index % gridWidth + 1, Math.floor(index/gridWidth) + 1]; 
         return result; 
     }
-    function getIndex(x,y){
+    function getIndex(x : number,y : number){
         return (x-1) + (y-1) * gridWidth; 
     }
     function handleChange(x:number,y:number){
@@ -37,10 +40,10 @@ export default function Grid(props) {
         
         setGrid(returnNewGrid(x,y)); 
         if(cachedCoordinates[0] !== 0 && cachedCoordinates[1] !== 0){
-            let c : CardModel = {header:"", content:"", startPos: cachedCoordinates.slice(0,2), endPos:[x,y]}; 
+            let c : CardModel = {header:"Header", content:"Content", startPos: cachedCoordinates.slice(0,2), endPos:[x,y]}; 
             setGridNotes([...gridNotes, c]); 
             setCachedCoordinates([0,0,cachedCoordinates[2]+1]);
-            props.init(props.id, []);
+           
             
         }
         else{
@@ -56,7 +59,7 @@ export default function Grid(props) {
     }
 
     function returnNewGrid(givenX, givenY){
-        console.log(`${givenX} , ${givenY}, ${cachedCoordinates}`);
+        //console.log(`${givenX} , ${givenY}, ${cachedCoordinates}`);
         if(cachedCoordinates[0] === 0 && cachedCoordinates[1] === 0){
             return grid; 
         }
@@ -71,7 +74,13 @@ export default function Grid(props) {
             return newGrid; 
         }
     }
-
+    function updateCard(id:number,header:string, content:string){
+        let localNotes = [...gridNotes]; 
+        localNotes[id].header = header;
+        localNotes[id].content = content; 
+        setGridNotes(localNotes);
+     
+    }
     const styleA = {gridGap: '1rem', display: 'grid', gridTemplateColumns: `repeat(${gridWidth}, 1fr)`, gridTemplateRows: `repeat(${gridHeight}, 1fr)`}; 
     return (
             <div className='flex' >
@@ -79,8 +88,8 @@ export default function Grid(props) {
                 {
                     showNotes && 
                     <div className="p-5" style={styleA}>
-                    {gridNotes.map( (val) => 
-                    <Card gridColumn={`${val.startPos[0]}/${val.endPos[0]+1}`} gridRow={`${val.startPos[1]}/${val.endPos[1]+1}`} key={`${val}`}></Card>)}
+                    {gridNotes.map( (val,index) => 
+                    <Card gridColumn={`${val.startPos[0]}/${val.endPos[0]+1}`} gridRow={`${val.startPos[1]}/${val.endPos[1]+1}`} key={`${val.startPos} ${val.endPos} ${props.file} ${index}` } id={index} card={val}  update={updateCard} ></Card>)}
                    </div>
                 }
                 
@@ -88,8 +97,8 @@ export default function Grid(props) {
                     
                     !showNotes && 
                     <div className="p-5" style={styleA}>
-                    {grid.map( (val) => ( 
-                            <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={handleChange} key={`${val[0]}`}  ></ShowPositionGrid>  
+                    {grid.map( (val,index) => ( 
+                            <ShowPositionGrid value={val[1]} x={val[0][0]} y={val[0][1]} onChange={handleChange} key={`${val[0]} ${index}`} ></ShowPositionGrid>  
                     ))} 
                     </div>
                 }
