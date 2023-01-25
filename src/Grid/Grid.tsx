@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react'; 
-import Card from '../Card/Card'
+import Card, {CardModel} from '../Card/Card'
 
 import ShowPositionGrid from './PGrid';
+
+
 
 export default function Grid(props) {
    
@@ -11,7 +13,7 @@ export default function Grid(props) {
         const [grid, setGrid] = useState(loop(gridWidth, gridHeight)); 
         const [cachedCoordinates, setCachedCoordinates] = useState([0,0,1]); 
         const [showNotes, setShowNotes] = useState(false); 
-        const [gridNotes, setGridNotes] = useState([]);  
+        const [gridNotes, setGridNotes] = useState<CardModel[]>([]);  
         
        
        
@@ -30,12 +32,13 @@ export default function Grid(props) {
     function getIndex(x,y){
         return (x-1) + (y-1) * gridWidth; 
     }
-    function handleChange(x,y){
+    function handleChange(x:number,y:number){
 
         
         setGrid(returnNewGrid(x,y)); 
         if(cachedCoordinates[0] !== 0 && cachedCoordinates[1] !== 0){
-            setGridNotes([...gridNotes, [cachedCoordinates.slice(0,2), [x,y]]]); 
+            let c : CardModel = {header:"", content:"", startPos: cachedCoordinates.slice(0,2), endPos:[x,y]}; 
+            setGridNotes([...gridNotes, c]); 
             setCachedCoordinates([0,0,cachedCoordinates[2]+1]);
             props.init(props.id, []);
             
@@ -77,9 +80,10 @@ export default function Grid(props) {
                     showNotes && 
                     <div className="p-5" style={styleA}>
                     {gridNotes.map( (val) => 
-                    <Card gridColumn={`${val[0][0]}/${val[1][0]+1}`} gridRow={`${val[0][1]}/${val[1][1]+1}`} key={`${val}`}></Card>)}
+                    <Card gridColumn={`${val.startPos[0]}/${val.endPos[0]+1}`} gridRow={`${val.startPos[1]}/${val.endPos[1]+1}`} key={`${val}`}></Card>)}
                    </div>
                 }
+                
                 {   
                     
                     !showNotes && 

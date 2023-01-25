@@ -1,5 +1,8 @@
 import React,{ useEffect, useState} from 'react';
 
+export interface CardModel{
+    header:string, content:string, startPos:number[],endPos:number[]
+}
 function Card(props){
     const [onHover,setOnHover] = useState(false);  
     const [title, setTitle] = useState("Title"); 
