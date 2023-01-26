@@ -32,10 +32,8 @@ More features coming soon!
 
 ### **Screenshots**
 
-Me trying to take notes
+
 ![screenshot 1](./public/Screenshot1.png)
 
----
 
-Me trying to demonstrate how to create a new sublayout below the tiled notes
 ![screenshot 2](./public/Screenshot2.png)
