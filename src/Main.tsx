@@ -81,7 +81,7 @@ export function Main(props){
           localStorage.removeItem(fileName);
           setGrids([]);
         }} >x Delete</button>
-          <input className=" border-b-2 border-green-700 text-[18px] py-2 px-3 mx-2 whitespace-nowrap text-black" value={fileName} placeholder="Your File"  onInput={(e) => {
+          <input className=" border-b-2 border-green-700 text-[18px] py-2 px-3 mx-2 whitespace-nowrap text-black appearance-none outline-none" value={fileName} placeholder="Your File"  onInput={(e) => {
          
         handleFileName((e.target as HTMLInputElement).value); 
        }}></input>
