@@ -54,7 +54,7 @@ export default function Grid(props) {
         if (cachedCoordinates[0] !== 0 && cachedCoordinates[1] !== 0) {
             let c: CardModel = { header: "Header", content: "Content", startPos: cachedCoordinates.slice(0, 2), endPos: [x, y]};
             setCards((old2) => [...old2, c])
-            props.update(props.id, [...cards, c], true); 
+            props.update(props.id, [...cards, c], false); 
         }
 
 
