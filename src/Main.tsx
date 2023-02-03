@@ -8,30 +8,30 @@ import Canvas from './Canvas/Canvas';
 interface GridsModel{
   content : CardModel[];
   id : number,
-  key:number
+  
 }
 
 interface DrawModel{
   data? : string; 
   id : number, 
-  key : number
+ 
 }
 
 
 export function Main(props){
     const [fileName, setFileName] = useState("yourFile"); 
-    const [grids,setGrids] = useState<GridsModel[]>([{content:[], id:0, key:uuidv4()}]); 
-    const [drawings, setDrawings] = useState<DrawModel[]>([{data:undefined, id:0, key:uuidv4()}]); 
+    const [grids,setGrids] = useState<GridsModel[]>([]); 
+    const [drawings, setDrawings] = useState<DrawModel[]>([{data:undefined, id:uuidv4()}]); 
 
     useEffect(() => {
-      loadFile(fileName, true);
+      loadFile(fileName);
     }, [])
 
     function handleSave(file: string, content:GridsModel[]){
       localStorage.setItem(file, JSON.stringify(content)); 
     }
 
-    function loadFile(newFileName:string, firstTry:boolean){
+    function loadFile(newFileName:string){
       if(newFileName !== ""){
         let item = localStorage.getItem(newFileName);
         
@@ -45,18 +45,67 @@ export function Main(props){
         }
         else{
            
-           setGrids([{content:[], id:0, key:uuidv4()}]);
+           setGrids([{content:[], id:uuidv4()}]);
         }
         setFileName(newFileName);
       }
     }
     function handleFileName(newFileName:string) {
       localStorage.setItem(fileName, JSON.stringify(grids));  
-      loadFile(newFileName, false);
+      loadFile(newFileName);
       
     }
 
+    function deleteGrid(id){
+      let cardsLocal = [...grids]; 
+      cardsLocal = cardsLocal.filter(x => x.id !== id); 
+      setGrids(cardsLocal);
+      handleSave(fileName, cardsLocal); 
+    }
   
+    function deleteCanvas(id){
+      let cnvs = [...drawings]; 
+      cnvs = cnvs.filter(x => x.id !== id); 
+      setDrawings(cnvs); 
+       
+    }
+  
+    function updateContent(id, content : CardModel[]){
+     
+      let gridsLocal = [...grids];
+      const index = gridsLocal.findIndex(x => x.id === id);   
+      if(index !== undefined){
+        gridsLocal[index].content = content;  
+        setGrids(gridsLocal);
+        handleSave(fileName, gridsLocal); 
+      }
+      else{
+        console.error(`Card Id ${id} is not found in the records`);
+      }
+    }
+  
+      function updateCanvas( data : string, id:number){
+     
+        let drawingsLocal = [...drawings];  
+        const index = drawingsLocal.findIndex(x => x.id === id);
+        if(index !== undefined){
+            drawingsLocal[index].data = data;        
+            setDrawings(drawingsLocal); 
+        }
+        else{
+          console.error(`Canvas Id ${id} is not found in the records`);
+        }
+     
+     
+      
+    }
+    function handleClickNew(){
+      setGrids(cards => [...cards, {content:[], id: cards.length,key:uuidv4()}]); 
+    }
+    function handleClickDraw(){
+      setDrawings(x => [...x, {data:undefined, id: x.length, key:uuidv4()}]); 
+    }
+
   return (
     <div className="flex flex-col items-center text-white  justify-center h-screen">
       <div className="m-10 flex flex-col items-center w-[100%] overflow-y-auto">
@@ -79,12 +128,12 @@ export function Main(props){
         <p className="text-4xl font-mono  xl:mt-5 tracking-wider font-semibold">Tiling Notes</p>
       </div>
       <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[0px] w-[90%] max-w-[800px] ">
-        {grids.map((x) =>(<Grid grid={x.content} delete={deleteGrid} width={4} height={4}  key={x.key} id={x.id} file={fileName} update={updateContent} initialized={x.content.length !== 0}/> ))}
+        {grids.map((x) =>(<Grid grid={x.content} delete={deleteGrid} width={4} height={4}  key={x.id} id={x.id} file={fileName} update={updateContent} initialized={x.content.length !== 0}/> ))}
       </div>
       {
         
       <div className="   w-[90%] max-w-[800px] ">
-        {drawings.map((x) => <Canvas key={x.key} id={x.id} delete={deleteCanvas}  data={x.data} update={updateCanvas}></Canvas>)}
+        {drawings.map((x) => <Canvas key={x.id} id={x.id} delete={deleteCanvas}  data={x.data} update={updateCanvas}></Canvas>)}
       </div>
          
       }
@@ -114,64 +163,7 @@ export function Main(props){
   );
   
 
-  function deleteGrid(id){
-    let cardsLocal = [...grids]; 
-    cardsLocal = cardsLocal.filter(x => x.id !== id); 
-    setGrids(cardsLocal);
-    handleSave(fileName, cardsLocal); 
-  }
 
-  function deleteCanvas(id){
-    let cnvs = [...drawings]; 
-    cnvs = cnvs.filter(x => x.id !== id); 
-    setDrawings(cnvs); 
-     
-  }
-
-  function updateContent(id, content : CardModel[], refresh:boolean){
-   
-    let gridsLocal = [...grids];  
-    if(id < gridsLocal.length){
-      if(gridsLocal[id] !== undefined){
-        setGrids(grids => [...grids.slice(0,id), {content:content, id:id, key:refresh? uuidv4() : gridsLocal[id].key }, ...grids.slice(id+1)]);
-        handleSave(fileName, [...grids.slice(0,id), {content:content, id:id, key:refresh? uuidv4() : gridsLocal[id].key}, ...grids.slice(id+1)]); 
-      }
-      else{
-        console.error(`Undefined ${gridsLocal}`);
-      }
-   
-    }
-    else{
-      console.error(`Trying to access ${id} for list of size ${gridsLocal.length}`);
-    }
-  }
-
-    function updateCanvas( data : string, id:number,  refresh:boolean){
-   
-      let drawingsLocal = [...drawings];  
-      if(id < drawingsLocal.length){
-        if(drawingsLocal[id] !== undefined){
-          
-          setDrawings(x => [...x.slice(0,id), {data:data, id:id, key:refresh? uuidv4() : drawingsLocal[id].key }, ...x.slice(id+1)]); 
-        }
-        else{
-          console.error(`Undefined ${drawingsLocal}`);
-        }
-     
-      }
-      else{
-        console.error(`Trying to access ${id} for list of size ${drawingsLocal.length}`);
-      }
-   
-   
-    
-  }
-  function handleClickNew(){
-    setGrids(cards => [...cards, {content:[], id: cards.length,key:uuidv4()}]); 
-  }
-  function handleClickDraw(){
-    setDrawings(x => [...x, {data:undefined, id: x.length, key:uuidv4()}]); 
-  }
   
 
 }
