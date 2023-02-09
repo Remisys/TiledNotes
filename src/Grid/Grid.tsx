@@ -1,18 +1,31 @@
-import React, { useState, useEffect, cache } from 'react';
+import React, { useState,  useRef } from 'react';
 import Card, { CardModel } from '../Card/Card'
 import { v4 as uuidv4 } from 'uuid';
 import ShowPositionGrid from './PGrid';
+import { GridModel } from '../Main';
 
 
+interface CachedCoordinatesModel{
+    x: number,
+    y: number, 
+    index : number
+}
 
+interface GridProps{
+    model : GridModel,
+    file:string,
+    update : (id:number, content:CardModel[]) => void,
+    delete : (id:number) => void,  
+}
 
+export default function Grid(props : GridProps) {
 
-export default function Grid(props) {
-
-    const [cards, setCards] = useState<CardModel[]>(props.grid);
-    const [cachedCoordinates, setCachedCoordinates] = useState([0, 0, 1]);
-   
-    let grid = Array(props.width * props.height).fill(0);
+    const [cards, setCards] = useState<CardModel[]>(props.model.content);
+    
+    const cachedCoordinatesNew = useRef<CachedCoordinatesModel>({x:0, y:0, index:1}); 
+    const width = 4;
+    const height = 4;  
+    let grid = Array(width * height).fill(0);
 
    
     
@@ -40,22 +53,26 @@ export default function Grid(props) {
     
 
     function getXY(index: number) {
-        let result = [index % props.width + 1, Math.floor(index / props.width) + 1];
+        let result = [index % width + 1, Math.floor(index / width) + 1];
         return result;
     }
-    function getIndex(x: number, y: number) {
-        return (x - 1) + (y - 1) * props.width;
-    }
+   
     function handleChange(x: number, y: number) {
-
-        setCachedCoordinates(old => {
-            return old[0] !== 0 && old[1] !== 0 ? [0, 0, old[2] + 1] : [x, y, old[2]];
-        })
-        if (cachedCoordinates[0] !== 0 && cachedCoordinates[1] !== 0) {
-            let c: CardModel = { header: "Header", content: "Content", startPos: cachedCoordinates.slice(0, 2), endPos: [x, y]};
+        
+        if(cachedCoordinatesNew.current.x !== 0 && cachedCoordinatesNew.current.y !== 0){
+            let c: CardModel = { header: "Header", content: "Content", startPos: [cachedCoordinatesNew.current.x, cachedCoordinatesNew.current.y], endPos: [x, y]};
             setCards((old2) => [...old2, c])
-            props.update(props.id, [...cards, c], true); 
+            props.update(props.model.id, [...cards, c]); 
+            cachedCoordinatesNew.current.x = 0; 
+            cachedCoordinatesNew.current.y = 0;
+            cachedCoordinatesNew.current.index += 1;  
+           
         }
+        else{
+            cachedCoordinatesNew.current.x = x; 
+            cachedCoordinatesNew.current.y = y; 
+        }
+       
 
 
 
@@ -76,11 +93,11 @@ export default function Grid(props) {
             return localCards;
         });
         const localGridNotes = [...cards.slice(0, id), { ...cards[id], header: header, content: content }, ...cards.slice(id + 1)];
-        props.update(props.id, localGridNotes, false); 
+        props.update(props.model.id, localGridNotes); 
 
 
     }
-    const styleA = { gridGap: '1rem', display: 'grid', gridTemplateColumns: `repeat(${props.width}, 1fr)`, gridTemplateRows: `repeat(${props.height}, 1fr)` };
+    const styleA = { gridGap: '1rem', display: 'grid', gridTemplateColumns: `repeat(${width}, 1fr)`, gridTemplateRows: `repeat(${height}, 1fr)` };
 
    
     return (
@@ -108,7 +125,7 @@ export default function Grid(props) {
 
 
             </div>
-            <button className=' bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center' onClick={() => props.delete(props.id)}>X</button>
+            <button className=' bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center' onClick={() => props.delete(props.model.id)}>X</button>
         </div>
     );
 
