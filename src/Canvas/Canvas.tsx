@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useRef} from 'react';
+import { CanvasModel } from '../Main';
 interface position{
     x: number, 
     y: number
 }
 
-export default function Canvas(props){
+interface CanvasProps{
+   model : CanvasModel,
+   update: (id:number, data:string) => void,
+   delete : (id:number) => void
+}
+
+export default function Canvas(props : CanvasProps){
     const canvas = useRef(null); 
     const image = useRef(null); 
     const record = useRef(false);
@@ -39,8 +46,8 @@ export default function Canvas(props){
             
             //Getting the current image
             if(image.current !== null){
-                if(image.current.src !== props.data){
-                    image.current.src = props.data || ""; 
+                if(image.current.src !== props.model.data){
+                    image.current.src = props.model.data || ""; 
                 }
                 
                 if(image.current.src !== ""){                
@@ -49,7 +56,7 @@ export default function Canvas(props){
                 image.current.src = canvas.current.toDataURL(); 
             }
                                   
-            props.update(canvas.current.toDataURL(), props.id);
+            props.update( props.model.id, canvas.current.toDataURL());
             
             
         }        
@@ -66,8 +73,8 @@ export default function Canvas(props){
             image.current = new Image(); 
         }
         else{
-            if(image.current.src !== props.data){
-                image.current.src = props.data || ""; 
+            if(image.current.src !== props.model.data){
+                image.current.src = props.model.data || ""; 
             }            
             if(image.current.src !== ""){ 
                 let context = (canvas.current as HTMLCanvasElement).getContext("2d");
@@ -88,7 +95,7 @@ export default function Canvas(props){
              <canvas ref={canvas}  className="grow m-5 w-[100%] aspect-video border-solid border-2 border-indigo-600" onMouseDown={(e) => onMouseDown(e) } onMouseMove={(e) => onMouseOver(e) } onMouseUp={(e) => onMouseUp(e) } >
 
             </canvas>
-            <button className=' bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center' onClick={() => props.delete(props.id)}>X</button>
+            <button className=' bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center' onClick={() => props.delete(props.model.id)}>X</button>
         </div>
            
     ); 

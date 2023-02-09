@@ -5,29 +5,37 @@ import { CardModel } from './Card/Card';
 import { v4 as uuidv4 } from 'uuid';
 import Canvas from './Canvas/Canvas';
 
-interface GridsModel{
+
+export interface GridModel{
   content : CardModel[];
   id : number,
   
 }
 
-interface DrawModel{
+
+export interface CanvasModel{
   data? : string; 
   id : number, 
  
 }
 
+export interface SectionModel{
+  grid : GridModel | null, 
+  canvas : CanvasModel | null, 
+  type : "grid" | "canvas"
+}
+
 
 export function Main(props){
     const [fileName, setFileName] = useState("yourFile"); 
-    const [grids,setGrids] = useState<GridsModel[]>([]); 
-    const [drawings, setDrawings] = useState<DrawModel[]>([{data:undefined, id:uuidv4()}]); 
+    const [sections,setSections] = useState<SectionModel[]>([]); 
+   
 
     useEffect(() => {
       loadFile(fileName);
     }, [])
 
-    function handleSave(file: string, content:GridsModel[]){
+    function handleSave(file: string, content:SectionModel[]){
       localStorage.setItem(file, JSON.stringify(content)); 
     }
 
@@ -37,73 +45,96 @@ export function Main(props){
         
         if(item !== null){
          
-          let parsedCards : GridsModel[] = JSON.parse(item);
-          if(isEqual(parsedCards, grids)=== false){
+          let parsedCards : SectionModel[] = JSON.parse(item);
+          if(isEqual(parsedCards, sections)=== false){
             console.log("Getting stuff from backend" + JSON.stringify(parsedCards));
-            setGrids(parsedCards);
+            setSections(parsedCards);
           }        
         }
         else{
            
-           setGrids([{content:[], id:uuidv4()}]);
+           setSections([]);
         }
-        setFileName(newFileName);
+       
       }
+      setFileName(newFileName);
     }
     function handleFileName(newFileName:string) {
-      localStorage.setItem(fileName, JSON.stringify(grids));  
+      localStorage.setItem(fileName, JSON.stringify(sections));  
       loadFile(newFileName);
       
     }
 
-    function deleteGrid(id){
-      let cardsLocal = [...grids]; 
-      cardsLocal = cardsLocal.filter(x => x.id !== id); 
-      setGrids(cardsLocal);
-      handleSave(fileName, cardsLocal); 
-    }
+    
   
-    function deleteCanvas(id){
-      let cnvs = [...drawings]; 
-      cnvs = cnvs.filter(x => x.id !== id); 
-      setDrawings(cnvs); 
-       
+   
+
+    function deleteElement(id:number, type:"canvas" | "grid"){
+      let cardsLocal = [...sections]; 
+      cardsLocal = cardsLocal.filter(x => {
+        if(x.type === type){
+          if(x.type === "grid"){
+            return x.grid.id !== id;
+          }
+          else{
+            return x.canvas.id !== id; 
+          }
+           
+        } 
+        return true;
+      }); 
+      setSections(cardsLocal);
+      handleSave(fileName, cardsLocal);
     }
+
   
-    function updateContent(id, content : CardModel[]){
+    function updateGrid(id, content : CardModel[]){
      
-      let gridsLocal = [...grids];
-      const index = gridsLocal.findIndex(x => x.id === id);   
-      if(index !== undefined){
-        gridsLocal[index].content = content;  
-        setGrids(gridsLocal);
-        handleSave(fileName, gridsLocal); 
+      let gridsLocal = [...sections];
+      const index = gridsLocal.findIndex(x => {
+        if(x.grid !== null){
+          return x.grid.id === id; 
+        }
+        return false ; 
+      });
+      
+      
+      if(index !== -1){
+        gridsLocal[index].grid.content = content;  
+        setSections(gridsLocal);
       }
       else{
-        console.error(`Card Id ${id} is not found in the records`);
+        console.error(`Section Id ${id} is not found in the records`);
       }
     }
   
-      function updateCanvas( data : string, id:number){
+      function updateCanvas( id:number,  data : string,){
      
-        let drawingsLocal = [...drawings];  
-        const index = drawingsLocal.findIndex(x => x.id === id);
-        if(index !== undefined){
-            drawingsLocal[index].data = data;        
-            setDrawings(drawingsLocal); 
+        let drawingsLocal = [...sections];  
+        const index = drawingsLocal.findIndex(x => {
+          if(x.canvas !== null){
+            return x.canvas.id === id; 
+          }
+          return false;
+        } );
+        if(index !== -1){
+            drawingsLocal[index].canvas.data = data;        
+            setSections(drawingsLocal); 
         }
         else{
-          console.error(`Canvas Id ${id} is not found in the records`);
+          console.error(`Section Id ${id} is not found in the records`);
         }
+
+        
      
      
       
     }
     function handleClickNew(){
-      setGrids(cards => [...cards, {content:[], id: cards.length,key:uuidv4()}]); 
+      setSections(x => [...x, {grid:{content:[], id:uuidv4()}, canvas:null, type:"grid"}]); 
     }
     function handleClickDraw(){
-      setDrawings(x => [...x, {data:undefined, id: x.length, key:uuidv4()}]); 
+      setSections(x => [...x, {grid:null, canvas:{data:null, id:uuidv4()}, type:"canvas"}]); 
     }
 
   return (
@@ -128,24 +159,26 @@ export function Main(props){
         <p className="text-4xl font-mono  xl:mt-5 tracking-wider font-semibold">Tiling Notes</p>
       </div>
       <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[0px] w-[90%] max-w-[800px] ">
-        {grids.map((x) =>(<Grid grid={x.content} delete={deleteGrid} width={4} height={4}  key={x.id} id={x.id} file={fileName} update={updateContent} initialized={x.content.length !== 0}/> ))}
-      </div>
-      {
-        
-      <div className="   w-[90%] max-w-[800px] ">
-        {drawings.map((x) => <Canvas key={x.id} id={x.id} delete={deleteCanvas}  data={x.data} update={updateCanvas}></Canvas>)}
-      </div>
+        {sections.map((x) => {
+          if(x.type === "grid" && x.grid !== null){
+            return <Grid update={updateGrid} delete={(id:number) => deleteElement(id, "grid")} model={x.grid} file={fileName} key={x.grid.id}></Grid>
+          }
+          else if(x.type === "canvas" && x.canvas !== null){
+            return <Canvas update={updateCanvas} delete={(id:number) => deleteElement(id, "canvas")} model={x.canvas} key={x.canvas.id}></Canvas>
+          } 
          
-      }
+        })}
+      </div>
+      
      
       <div className="flex justify-between w-[90%] max-w-[715px] mb-10  py-5 relative right-[20px] ">
         <button className=" rounded-md bg-sky-600 text-[18px] py-2 px-3 mr-2  whitespace-nowrap  hover:scale-95" onClick={handleClickNew} >+ New</button>
         <button className=" rounded-md bg-purple-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={handleClickDraw} >Draw</button>
-        <button className=" rounded-md bg-green-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={(e) => {handleSave(fileName, grids)}} >Save</button>
+        <button className=" rounded-md bg-green-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95" onClick={(e) => {handleSave(fileName, sections)}} >Save</button>
       
       <button className=" rounded-md bg-red-600 text-[18px] py-2 px-3 ml-2  whitespace-nowrap  hover:scale-95" onClick={(e) => {
         localStorage.removeItem(fileName);
-        setGrids([]);
+        setSections([]);
       }} >x Delete</button>
       </div>
       </div>
