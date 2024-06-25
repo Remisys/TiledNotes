@@ -3,16 +3,20 @@ import Card, { CardModel } from "../Card/Card";
 import { GridModel } from "../Main";
 import ShowPositionGrid from "./PGrid";
 
-interface GridProps {
-  model: GridModel;
+type GridProps = {
   file: string;
-  update: (id: number, content: CardModel[]) => void;
-  deleteGrid: (id: number) => void;
-}
+  update: (content: CardModel[]) => void;
+  deleteGrid: () => void;
+} & GridModel;
 
-export const Grid: FC<GridProps> = ({ model, file, update, deleteGrid }) => {
-  const [cards, setCards] = useState<CardModel[]>(model.content);
-
+export const Grid: FC<GridProps> = ({
+  gridCards,
+  file,
+  update,
+  deleteGrid,
+}) => {
+  const [cards, setCards] = useState<CardModel[]>(gridCards);
+  if (!cards) return;
   const width = 4;
   const height = 4;
   let grid = Array(width * height).fill(0);
@@ -87,7 +91,7 @@ export const Grid: FC<GridProps> = ({ model, file, update, deleteGrid }) => {
       { ...cards[id], header: header, content: content },
       ...cards.slice(id + 1),
     ];
-    update(model.id, localGridNotes);
+    update(localGridNotes);
   }
   const styleA = {
     gridGap: "1rem",
@@ -137,7 +141,7 @@ export const Grid: FC<GridProps> = ({ model, file, update, deleteGrid }) => {
       </div>
       <button
         className=" bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center"
-        onClick={() => deleteGrid(model.id)}
+        onClick={() => deleteGrid()}
       >
         X
       </button>
