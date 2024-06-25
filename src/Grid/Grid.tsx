@@ -141,7 +141,7 @@ export const Grid: FC<GridProps> = ({
       </div>
       <button
         className=" bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center"
-        onClick={() => deleteGrid()}
+        onClick={deleteGrid}
       >
         X
       </button>
