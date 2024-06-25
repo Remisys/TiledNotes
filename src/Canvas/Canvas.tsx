@@ -42,23 +42,6 @@ export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
       ctx.stroke();
       ctx.closePath();
       setPrevCoords({ x: currX, y: currY });
-      //Getting the current image
-      if (!image.current) {
-        if (image.current.src !== canvasData) {
-          image.current.src = canvasData || "";
-        }
-
-        if (image.current.src.trim().length > 0) {
-          ctx.drawImage(
-            image.current,
-            0,
-            0,
-            canvasRef.current.clientWidth,
-            canvasRef.current.clientHeight
-          );
-        }
-        image.current.src = canvasRef.current.toDataURL();
-      }
 
       //update( model.id, canvas.current.toDataURL());
     }

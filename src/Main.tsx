@@ -80,9 +80,7 @@ export const Main: FC = () => {
           <svg preserveAspectRatio="none" viewBox="0 0 400 200">
             <linearGradient id="a">
               <stop offset="0%" stopColor="#FF0031" />
-
               <stop offset="50%" stopColor="#FF7800" />
-
               <stop offset="100%" stopColor="#FFCD00" />
             </linearGradient>
             <path d="M 0,130 L 400,200 L 400,0 L 0,0 Z" fill="url(#a)"></path>
@@ -135,7 +133,6 @@ export const Main: FC = () => {
           >
             Save
           </button>
-
           <button
             className=" rounded-md bg-red-600 text-[18px] py-2 px-3 ml-2  whitespace-nowrap  hover:scale-95"
             onClick={(e) => {

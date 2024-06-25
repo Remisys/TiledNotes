@@ -1,7 +1,19 @@
-import { DragEvent, FC, useState } from "react";
+import { DragEvent, FC } from "react";
 import Card, { CardModel } from "../Card/Card";
 import { GridModel } from "../Main";
-import ShowPositionGrid from "./PGrid";
+import {
+  DEFAULT_HEIGHT,
+  DEFAULT_WIDTH,
+  getFreeSpaces,
+} from "./GridHelperFunctions";
+import PositionCell from "./PositionCell";
+
+const styleA = {
+  gridGap: "1rem",
+  display: "grid",
+  gridTemplateColumns: `repeat(${DEFAULT_WIDTH}, 1fr)`,
+  gridTemplateRows: `repeat(${DEFAULT_HEIGHT}, 1fr)`,
+};
 
 type GridProps = {
   file: string;
@@ -15,129 +27,63 @@ export const Grid: FC<GridProps> = ({
   update,
   deleteGrid,
 }) => {
-  const [cards, setCards] = useState<CardModel[]>(gridCards);
-  if (!cards) return;
-  const width = 4;
-  const height = 4;
-  let grid = Array(width * height).fill(0);
+  const freePoints = getFreeSpaces(gridCards);
 
-  const getXY = (index: number) => ({
-    x: (index % width) + 1,
-    y: Math.floor(index / width) + 1,
-  });
-
-  for (let i = 0; i < grid.length; i++) {
-    const xTile = getXY(i).x;
-    const yTile = getXY(i).y;
-    let found = false;
-    for (let j = 0; j <= cards.length; j++) {
-      const note = cards[j];
-      if (note !== undefined) {
-        if (
-          note.startPos[0] <= xTile &&
-          xTile <= note.endPos[0] &&
-          note.startPos[1] <= yTile &&
-          yTile <= note.endPos[1]
-        ) {
-          grid[i] = j + 1;
-          found = true;
-          break;
-        }
-      }
-    }
-    if (!found) {
-      grid[i] = 0;
-    }
-  }
-
-  const onDragStart = (x: number, y: number) => (e: DragEvent) => {
-    console.log("X : ", x, ", Y: ", y);
+  const onDragStart = (x: number, y: number) => (e: DragEvent) =>
     e.dataTransfer.setData("text/plain", `${x} ${y}`);
-  };
-  const onDrop = (xEnd: number, yEnd: number) => (e: DragEvent) => {
+
+  const onDrop = (xDrop: number, yDrop: number) => (e: DragEvent) => {
     e.preventDefault();
-    const coordinates = e.dataTransfer.getData("text/plain").split(" ");
-    const x = Number(coordinates[0]);
-    const y = Number(coordinates[1]);
-    setCards((cards) => [
-      ...cards,
+    const dragStartCoords = e.dataTransfer.getData("text/plain").split(" ");
+    const xStart = Math.min(Number(dragStartCoords[0]), xDrop);
+    const yStart = Math.min(Number(dragStartCoords[1]), yDrop);
+    const xEnd = Math.max(Number(dragStartCoords[0]), xDrop);
+    const yEnd = Math.max(Number(dragStartCoords[1]), yDrop);
+    console.log("Card created from ", { xStart, yStart }, { xEnd, yEnd });
+    update([
+      ...gridCards,
       {
         header: "Header",
         content: "Content",
-        startPos: [x, y],
-        endPos: [xEnd, yEnd],
+        startPos: { x: xStart, y: yStart },
+        endPos: { x: xEnd, y: yEnd },
       },
     ]);
   };
 
-  function isAllFilled() {
-    for (let i = 0; i < grid.length; i++) {
-      if (grid[i] === 0) return false;
-    }
-    return true;
-  }
-
-  function updateCard(id: number, header: string, content: string) {
-    setCards((x) => {
-      const localCards = [
-        ...x.slice(0, id),
-        { ...x[id], header: header, content: content },
-        ...x.slice(id + 1),
+  /**
+   * Update the card with a certain id
+   * @param id id of the card supplied when assigning the handler
+   * @returns the function to update the card with that id
+   */
+  const updateCard =
+    (id: number) =>
+    ({ header, content }: CardModel) => {
+      const localGridNotes = [
+        ...gridCards.slice(0, id),
+        { ...gridCards[id], header, content },
+        ...gridCards.slice(id + 1),
       ];
-      return localCards;
-    });
-    const localGridNotes = [
-      ...cards.slice(0, id),
-      { ...cards[id], header: header, content: content },
-      ...cards.slice(id + 1),
-    ];
-    update(localGridNotes);
-  }
-  const styleA = {
-    gridGap: "1rem",
-    display: "grid",
-    gridTemplateColumns: `repeat(${width}, 1fr)`,
-    gridTemplateRows: `repeat(${height}, 1fr)`,
-  };
-
-  const showPositionGrid = (value: number, index: number) => {
-    const x = getXY(index).x;
-    const y = getXY(index).y;
-    return (
-      <ShowPositionGrid
-        value={value}
-        x={x}
-        y={y}
-        key={`${x} ${y}`}
-        onDragStart={onDragStart(x, y)}
-        onDrop={onDrop(x, y)}
-      />
-    );
-  };
+      update(localGridNotes);
+    };
 
   return (
     <div className="flex">
       <div className="grow">
-        {isAllFilled() && (
-          <div className="p-5" style={styleA}>
-            {cards.map((val, index) => (
-              <Card
-                gridColumn={`${val.startPos[0]}/${val.endPos[0] + 1}`}
-                gridRow={`${val.startPos[1]}/${val.endPos[1] + 1}`}
-                key={`${val.startPos} ${val.endPos} ${file} ${index}`}
-                id={index}
-                card={val}
-                update={updateCard}
-              />
-            ))}
-          </div>
-        )}
-
-        {!isAllFilled() && (
-          <div className="p-5" style={styleA}>
-            {grid.map((val, index) => showPositionGrid(val, index))}
-          </div>
-        )}
+        <div className="p-5 w-full max-w-[1200px] aspect-square" style={styleA}>
+          {gridCards.map((card, index) => (
+            <Card key={index} {...card} update={updateCard(index)} />
+          ))}
+          {freePoints.map(({ x, y }) => (
+            <PositionCell
+              x={x}
+              y={y}
+              key={`${x} ${y}`}
+              onDragStart={onDragStart(x, y)}
+              onDrop={onDrop(x, y)}
+            />
+          ))}
+        </div>
       </div>
       <button
         className=" bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center"
