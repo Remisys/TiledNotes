@@ -1,7 +1,7 @@
 import { isEqual } from "lodash";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import Canvas from "./Canvas/Canvas";
+import { Canvas } from "./Canvas/Canvas";
 import { CardModel } from "./Card/Card";
 import { Grid } from "./Grid/Grid";
 
@@ -21,7 +21,7 @@ export interface SectionModel {
   type: "grid" | "canvas";
 }
 
-export function Main(props) {
+export const Main: FC = () => {
   const [fileName, setFileName] = useState("yourFile");
   const [sections, setSections] = useState<SectionModel[]>([]);
 
@@ -153,7 +153,7 @@ export function Main(props) {
               return (
                 <Canvas
                   update={updateCanvas}
-                  delete={(id: number) => deleteElement(id, "canvas")}
+                  deleteCanvas={(id: number) => deleteElement(id, "canvas")}
                   model={x.canvas}
                 />
               );
@@ -206,4 +206,4 @@ export function Main(props) {
       </div>
     </div>
   );
-}
+};
