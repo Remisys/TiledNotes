@@ -1,21 +1,15 @@
-import React, { MouseEvent, useEffect, useRef, useState } from "react";
+import { FC, MouseEvent, useEffect, useRef, useState } from "react";
 import { CanvasModel } from "../Main";
-interface position {
-  x: number;
-  y: number;
-}
 
-interface CanvasProps {
-  model: CanvasModel;
-  update: (id: number, data: string) => void;
-  deleteCanvas: (id: number) => void;
-}
+type CanvasProps = {
+  update: (data: string) => void;
+  deleteCanvas: () => void;
+} & CanvasModel;
 
-export const Canvas = ({ model, update, deleteCanvas }) => {
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const image = useRef(null);
+export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const image = useRef<HTMLImageElement>(null);
   const onDraw = useRef(false);
-  const init = useRef(false);
 
   const [prevCoords, setPrevCoords] = useState<{ x?: number; y?: number }>({
     x: undefined,
@@ -34,8 +28,8 @@ export const Canvas = ({ model, update, deleteCanvas }) => {
   };
   function onMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     if (!onDraw.current) return;
-    if (canvas.current !== null) {
-      const ctx = canvas.current.getContext("2d");
+    if (canvasRef.current !== null) {
+      const ctx = canvasRef.current.getContext("2d");
       const currX = e.nativeEvent.offsetX;
       const currY = e.nativeEvent.offsetY;
       ctx.fillStyle = "blue";
@@ -49,59 +43,59 @@ export const Canvas = ({ model, update, deleteCanvas }) => {
       ctx.closePath();
       setPrevCoords({ x: currX, y: currY });
       //Getting the current image
-      if (image.current !== null) {
-        if (image.current.src !== model.data) {
-          image.current.src = model.data || "";
+      if (!image.current) {
+        if (image.current.src !== canvasData) {
+          image.current.src = canvasData || "";
         }
 
-        if (image.current.src !== "") {
+        if (image.current.src.trim().length > 0) {
           ctx.drawImage(
             image.current,
             0,
             0,
-            canvas.current.clientWidth,
-            canvas.current.clientHeight
+            canvasRef.current.clientWidth,
+            canvasRef.current.clientHeight
           );
         }
-        image.current.src = canvas.current.toDataURL();
+        image.current.src = canvasRef.current.toDataURL();
       }
 
       //update( model.id, canvas.current.toDataURL());
     }
   }
 
-  useEffect(() => {
-    if (init.current === false) {
-      canvas.current.width = canvas.current.clientWidth;
-      canvas.current.height = canvas.current.clientHeight;
-      console.log("Init changed");
-      init.current = true;
-    }
-    if (image.current === null) {
+  const onInit = () => {
+    canvasRef.current.width = canvasRef.current.clientWidth;
+    canvasRef.current.height = canvasRef.current.clientHeight;
+
+    if (!image.current) {
       image.current = new Image();
     } else {
-      if (image.current.src !== model.data) {
-        image.current.src = model.data || "";
+      if (image.current.src !== canvasData) {
+        image.current.src = canvasData || "";
       }
       if (image.current.src !== "") {
-        let context = (canvas.current as HTMLCanvasElement).getContext("2d");
+        let ctx = canvasRef.current.getContext("2d");
 
-        context.drawImage(
+        ctx.drawImage(
           image.current,
           0,
           0,
-          canvas.current.clientWidth,
-          canvas.current.clientHeight
+          canvasRef.current.clientWidth,
+          canvasRef.current.clientHeight
         );
       }
-      image.current.src = canvas.current.toDataURL();
+      image.current.src = canvasRef.current.toDataURL();
     }
+  };
+  useEffect(() => {
+    onInit();
   }, []);
 
   return (
     <div className="flex">
       <canvas
-        ref={canvas}
+        ref={canvasRef}
         className="grow m-5 w-[100%] aspect-video border-solid border-2 border-indigo-600"
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
@@ -109,7 +103,7 @@ export const Canvas = ({ model, update, deleteCanvas }) => {
       />
       <button
         className=" bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center"
-        onClick={() => deleteCanvas(model.id)}
+        onClick={deleteCanvas}
       >
         X
       </button>

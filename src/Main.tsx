@@ -1,25 +1,25 @@
 import { isEqual } from "lodash";
 import { FC, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { Canvas } from "./Canvas/Canvas";
 import { CardModel } from "./Card/Card";
 import { Grid } from "./Grid/Grid";
 
-export interface GridModel {
-  content: CardModel[];
-  id: number;
-}
+export type GridModel = {
+  gridCards?: CardModel[];
+};
 
-export interface CanvasModel {
-  data?: string;
-  id: number;
-}
+export type CanvasModel = {
+  canvasData?: string;
+};
 
-export interface SectionModel {
-  grid: GridModel | null;
-  canvas: CanvasModel | null;
-  type: "grid" | "canvas";
+enum SectionEnum {
+  Grid,
+  Canvas,
 }
+export type SectionModel = {
+  type: SectionEnum;
+} & GridModel &
+  CanvasModel;
 
 export const Main: FC = () => {
   const [fileName, setFileName] = useState("yourFile");
@@ -29,93 +29,49 @@ export const Main: FC = () => {
     loadFile(fileName);
   }, []);
 
-  function handleSave(file: string, content: SectionModel[]) {
+  const handleSave = (file: string, content: SectionModel[]) => {
     localStorage.setItem(file, JSON.stringify(content));
-  }
+  };
 
-  function loadFile(newFileName: string) {
-    if (newFileName !== "") {
+  const loadFile = (newFileName: string) => {
+    if (newFileName.trim().length > 0) {
       let item = localStorage.getItem(newFileName);
-
-      if (item !== null) {
+      if (!item) {
         let parsedCards: SectionModel[] = JSON.parse(item);
-        if (isEqual(parsedCards, sections) === false) {
-          console.log(
-            "Getting stuff from backend" + JSON.stringify(parsedCards)
-          );
+        if (!isEqual(parsedCards, sections)) {
           setSections(parsedCards);
         }
-      } else {
-        setSections([]);
       }
     }
     setFileName(newFileName);
-  }
-  function handleFileName(newFileName: string) {
+  };
+  const handleFileName = (newFileName: string) => {
     localStorage.setItem(fileName, JSON.stringify(sections));
     loadFile(newFileName);
-  }
+  };
 
-  function deleteElement(id: number, type: "canvas" | "grid") {
-    let cardsLocal = [...sections];
-    cardsLocal = cardsLocal.filter((x) => {
-      if (x.type === type) {
-        if (x.type === "grid") {
-          return x.grid.id !== id;
-        } else {
-          return x.canvas.id !== id;
-        }
-      }
-      return true;
-    });
-    setSections(cardsLocal);
-    handleSave(fileName, cardsLocal);
-  }
+  const deleteElement = (id: number) => () =>
+    setSections((x) => [...x.slice(0, id), ...x.slice(id + 1)]);
 
-  function updateGrid(id, content: CardModel[]) {
-    let gridsLocal = [...sections];
-    const index = gridsLocal.findIndex((x) => {
-      if (x.grid !== null) {
-        return x.grid.id === id;
-      }
-      return false;
-    });
-
-    if (index !== -1) {
-      gridsLocal[index].grid.content = content;
-      setSections(gridsLocal);
-    } else {
-      console.error(`Section Id ${id} is not found in the records`);
-    }
-  }
-
-  function updateCanvas(id: number, data: string) {
-    let drawingsLocal = [...sections];
-    const index = drawingsLocal.findIndex((x) => {
-      if (x.canvas !== null) {
-        return x.canvas.id === id;
-      }
-      return false;
-    });
-    if (index !== -1) {
-      drawingsLocal[index].canvas.data = data;
-      setSections(drawingsLocal);
-    } else {
-      console.error(`Section Id ${id} is not found in the records`);
-    }
-  }
-  function handleClickNew() {
+  const updateGrid = (id: number) => (gridCards: CardModel[]) =>
     setSections((x) => [
-      ...x,
-      { grid: { content: [], id: uuidv4() }, canvas: null, type: "grid" },
+      ...x.slice(0, id),
+      { gridCards, type: SectionEnum.Grid },
+      ...x.slice(id + 1),
     ]);
-  }
-  function handleClickDraw() {
+
+  const updateCanvas = (id: number) => (canvas: string) =>
     setSections((x) => [
-      ...x,
-      { grid: null, canvas: { data: null, id: uuidv4() }, type: "canvas" },
+      ...x.slice(0, id),
+      { canvasData: canvas, type: SectionEnum.Canvas },
+      ...x.slice(id + 1),
     ]);
-  }
+
+  const handleClickNew = () =>
+    setSections((x) => [...x, { gridCards: [], type: SectionEnum.Grid }]);
+
+  const handleClickDraw = () =>
+    setSections((x) => [...x, { type: SectionEnum.Canvas }]);
 
   return (
     <div className="flex flex-col items-center text-white  justify-center h-screen">
@@ -138,27 +94,24 @@ export const Main: FC = () => {
           </p>
         </div>
         <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[0px] w-[90%] max-w-[800px] ">
-          {sections.map((x) => {
-            if (x.type === "grid" && x.grid !== null) {
-              return (
-                <Grid
-                  update={updateGrid}
-                  deleteGrid={(id: number) => deleteElement(id, "grid")}
-                  model={x.grid}
-                  file={fileName}
-                  key={x.grid.id}
-                />
-              );
-            } else if (x.type === "canvas" && x.canvas !== null) {
-              return (
-                <Canvas
-                  update={updateCanvas}
-                  deleteCanvas={(id: number) => deleteElement(id, "canvas")}
-                  model={x.canvas}
-                />
-              );
-            }
-          })}
+          {sections.map(({ type, gridCards, canvasData }, id) =>
+            type === SectionEnum.Grid ? (
+              <Grid
+                update={updateGrid(id)}
+                deleteGrid={deleteElement(id)}
+                gridCards={gridCards}
+                file={fileName}
+                key={id}
+              />
+            ) : (
+              <Canvas
+                update={updateCanvas(id)}
+                deleteCanvas={deleteElement(id)}
+                canvasData={canvasData}
+                key={id}
+              />
+            )
+          )}
         </div>
 
         <div className="flex justify-between w-[90%] max-w-[715px] mb-10  py-5 relative right-[20px] ">
@@ -176,7 +129,7 @@ export const Main: FC = () => {
           </button>
           <button
             className=" rounded-md bg-green-600 text-[18px] py-2 px-3 mx-2  whitespace-nowrap  hover:scale-95"
-            onClick={(e) => {
+            onClick={() => {
               handleSave(fileName, sections);
             }}
           >
