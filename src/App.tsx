@@ -1,15 +1,10 @@
 import React from "react";
 import { Main } from "./Main";
 
-
-function App(props){
- 
-    
-   return(
-    <React.StrictMode>
-       <Main></Main>
-    </React.StrictMode>
-  )
-}
+const App = (props) => (
+  <React.StrictMode>
+    <Main />
+  </React.StrictMode>
+);
 
 export default App;

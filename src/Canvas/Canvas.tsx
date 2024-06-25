@@ -76,20 +76,24 @@ export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
   }, []);
 
   return (
-    <div className="flex">
-      <canvas
-        ref={canvasRef}
-        className="grow m-5 w-[100%] aspect-video border-solid border-2 border-indigo-600"
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseMove={onMouseMove}
-      />
-      <button
-        className=" bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center"
-        onClick={deleteCanvas}
-      >
-        X
-      </button>
+    <div className="flex self-stretch justify-center ">
+      <div className="grow  max-w-[800px] aspect-video p-5">
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full border-solid border-2 border-indigo-600"
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+          onMouseMove={onMouseMove}
+        />
+      </div>
+      <div className="self-center">
+        <button
+          className=" bg-red-500 px-3 py-1 rounded-full hover:scale-[1.1] text-center"
+          onClick={deleteCanvas}
+        >
+          X
+        </button>
+      </div>
     </div>
   );
 };
