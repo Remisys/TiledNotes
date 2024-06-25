@@ -1,4 +1,4 @@
-import { DragEventHandler, FC } from "react";
+import { DragEventHandler, FC, useState } from "react";
 
 type PositionCellProps = {
   x: number;
@@ -7,16 +7,24 @@ type PositionCellProps = {
   onDrop: DragEventHandler<HTMLDivElement>;
 };
 const PositionCell: FC<PositionCellProps> = ({ x, y, onDragStart, onDrop }) => {
-  const gridColumn = `${x + 1} / ${x + 2}`;
-  const gridRow = `${y + 1} / ${y + 2}`;
+  const gridColumn = `${x} / ${x + 1}`;
+  const gridRow = `${y} / ${y + 1}`;
+  const [draggedHere, setDraggedHere] = useState(false);
   return (
     <div
-      className="w-full border-blue-500  hover:scale-105 hover:border-sky-500 border aspect-square "
+      className={` ${draggedHere ? "bg-sky-500" : "border-blue-500"} w-full  hover:scale-105 hover:bg-sky-500 border-2 hover:border-none aspect-square`}
       style={{ gridColumn, gridRow }}
       onDragStart={onDragStart}
       draggable
       onDrop={onDrop}
-      onDragEnter={(e) => e.preventDefault()}
+      onDragEnter={(e) => {
+        e.preventDefault();
+        setDraggedHere(true);
+      }}
+      onDragLeave={(e) => {
+        e.preventDefault();
+        setDraggedHere(false);
+      }}
       onDragOver={(e) => e.preventDefault()}
     />
   );

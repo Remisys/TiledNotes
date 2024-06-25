@@ -46,8 +46,8 @@ export const getFreeSpaces = (
     );
 
   const results = [];
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
+  for (let y = 1; y <= h; y++) {
+    for (let x = 1; x <= w; x++) {
       if (!isCoordinateOccupied({ x, y })) results.push({ x, y });
     }
   }

@@ -23,15 +23,16 @@ const Card: FC<CardProps> = ({ update, ...cardModel }) => {
 
   const updateHeader = (header: string) => update({ ...cardModel, header });
   const updateContent = (content: string) => update({ ...cardModel, content });
-
+  const gridColumn = `${x0}/${x1 + 1}`;
+  const gridRow = `${y0}/${y1 + 1}`;
   return (
     <div
       className="rounded-lg bg-slate-50 p-2 border-2 border-sky-600 hover:scale-[1.02] flex flex-col "
       onMouseOut={() => setOnHover(false)}
       onMouseOver={() => setOnHover(true)}
       style={{
-        gridColumn: `${x0 + 1}/${x1 + 2}`,
-        gridRow: `${y0 + 1}/${y1 + 2}`,
+        gridColumn,
+        gridRow,
       }}
     >
       <textarea
