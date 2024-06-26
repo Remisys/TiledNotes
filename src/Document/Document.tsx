@@ -1,15 +1,9 @@
 import { isEqual } from "lodash";
 import { FC, useEffect, useState } from "react";
-import { CardModel } from "./Card/Card";
-import { InnerSections } from "./InnerSections";
-
-export type GridModel = {
-  gridCards?: CardModel[];
-};
-
-export type CanvasModel = {
-  canvasData?: string;
-};
+import { CanvasModel } from "./Canvas/Canvas";
+import { DocumentButtons } from "./DocumentButtons";
+import { GridModel } from "./Grid/Grid";
+import { Sections } from "./Sections/Sections";
 
 export enum SectionEnum {
   Grid,
@@ -20,7 +14,7 @@ export type SectionModel = {
 } & GridModel &
   CanvasModel;
 
-export const Main: FC = () => {
+export const Document: FC = () => {
   const [fileName, setFileName] = useState("yourFile");
 
   const [sections, setSections] = useState<SectionModel[]>([]);
@@ -28,8 +22,8 @@ export const Main: FC = () => {
     //loadFile(fileName);
   }, []);
 
-  const handleSave = (file: string, content: SectionModel[]) => {
-    localStorage.setItem(file, JSON.stringify(content));
+  const handleSave = () => {
+    localStorage.setItem(fileName, JSON.stringify(sections));
   };
 
   const loadFile = (newFileName: string) => {
@@ -55,50 +49,28 @@ export const Main: FC = () => {
   const handleClickDraw = () =>
     setSections((x) => [...x, { type: SectionEnum.Canvas }]);
 
+  const handleRemove = () => {
+    localStorage.removeItem(fileName);
+    setSections([]);
+  };
+
   return (
     <div className="flex flex-col items-center text-white  justify-center h-screen">
-      <InnerSections
+      <Sections
         fileName={fileName}
         sections={sections}
         setSections={setSections}
       />
 
-      <div className="self-stretch flex justify-center mb-20 self-trans ">
-        <div className="px-5 grow  max-w-[800px] flex justify-between">
-          <button
-            className=" rounded-md bg-sky-600 text-[18px] py-2 px-3  whitespace-nowrap  hover:scale-95"
-            onClick={handleClickNew}
-          >
-            + New
-          </button>
-          <button
-            className=" rounded-md bg-purple-600 text-[18px] py-2 px-3  whitespace-nowrap  hover:scale-95"
-            onClick={handleClickDraw}
-          >
-            Draw
-          </button>
-          <button
-            className=" rounded-md bg-green-600 text-[18px] py-2 px-3   whitespace-nowrap  hover:scale-95"
-            onClick={() => {
-              handleSave(fileName, sections);
-            }}
-          >
-            Save
-          </button>
-          <button
-            className=" rounded-md bg-red-600 text-[18px] py-2 px-3   whitespace-nowrap  hover:scale-95"
-            onClick={() => {
-              localStorage.removeItem(fileName);
-              setSections([]);
-            }}
-          >
-            x Delete
-          </button>
-        </div>
-        <button className="invisible  px-3 py-1 rounded-full hover:scale-[1.1] text-center">
-          X
-        </button>
-      </div>
+      <DocumentButtons
+        {...{
+          handleClickDraw,
+          handleRemove,
+          handleSave,
+          handleClickNew,
+          sections,
+        }}
+      />
       <div className="flex flex-row  p-3  fixed left-0 bottom-0 items-center justify-center w-[100%] z-2 bg-white border-t-2 border-t-sky-600">
         <input
           className=" border-b-2 border-green-700 text-[18px] py-2 px-3 mx-2 whitespace-nowrap text-black appearance-none outline-none"

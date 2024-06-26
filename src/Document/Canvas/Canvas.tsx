@@ -1,5 +1,8 @@
 import { FC, MouseEvent, useEffect, useRef, useState } from "react";
-import { CanvasModel } from "../Main";
+
+export type CanvasModel = {
+  canvasData?: string;
+};
 
 type CanvasProps = {
   update: (data: string) => void;
@@ -76,7 +79,7 @@ export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
   }, []);
 
   return (
-    <div className="flex self-stretch justify-center ">
+    <div className="flex self-stretch justify-center pointer-events-none">
       <div className="grow  max-w-[800px] aspect-video p-5">
         <canvas
           ref={canvasRef}

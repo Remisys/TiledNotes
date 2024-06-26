@@ -1,12 +1,16 @@
 import { DragEvent, FC } from "react";
 import Card, { CardModel } from "../Card/Card";
-import { GridModel } from "../Main";
+
 import {
   DEFAULT_HEIGHT,
   DEFAULT_WIDTH,
   getFreeSpaces,
 } from "./GridHelperFunctions";
 import PositionCell from "./PositionCell";
+
+export type GridModel = {
+  gridCards?: CardModel[];
+};
 
 const styleA = {
   gridGap: "1rem",
@@ -68,8 +72,8 @@ export const Grid: FC<GridProps> = ({
     };
 
   return (
-    <div className="self-stretch flex justify-center ">
-      <div className="grow  max-w-[800px]">
+    <div className="self-stretch flex justify-center  ">
+      <div className="grow  max-w-[800px] ">
         <div className=" w-full aspect-square p-5" style={styleA}>
           {gridCards.map((card, index) => (
             <Card key={index} {...card} update={updateCard(index)} />

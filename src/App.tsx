@@ -1,9 +1,10 @@
+"use client";
 import React from "react";
-import { Main } from "./Main";
+import { Document } from "./Document/Document";
 
-const App = (props) => (
+const App = () => (
   <React.StrictMode>
-    <Main />
+    <Document />
   </React.StrictMode>
 );
 
