@@ -1,12 +1,16 @@
 import { DragEvent, FC } from "react";
 import Card, { CardModel } from "../Card/Card";
-import { GridModel } from "../Main";
+
 import {
   DEFAULT_HEIGHT,
   DEFAULT_WIDTH,
   getFreeSpaces,
 } from "./GridHelperFunctions";
 import PositionCell from "./PositionCell";
+
+export type GridModel = {
+  gridCards?: CardModel[];
+};
 
 const styleA = {
   gridGap: "1rem",
@@ -16,17 +20,11 @@ const styleA = {
 };
 
 type GridProps = {
-  file: string;
   update: (content: CardModel[]) => void;
   deleteGrid: () => void;
 } & GridModel;
 
-export const Grid: FC<GridProps> = ({
-  gridCards,
-  file,
-  update,
-  deleteGrid,
-}) => {
+export const Grid: FC<GridProps> = ({ gridCards = [], update, deleteGrid }) => {
   const freePoints = getFreeSpaces(gridCards);
 
   const onDragStart = (x: number, y: number) => (e: DragEvent) =>
@@ -68,9 +66,9 @@ export const Grid: FC<GridProps> = ({
     };
 
   return (
-    <div className="flex">
-      <div className="grow">
-        <div className="p-5 w-full max-w-[1200px] aspect-square" style={styleA}>
+    <div className="self-stretch flex justify-center  ">
+      <div className="grow  max-w-[800px] ">
+        <div className=" w-full aspect-square p-5" style={styleA}>
           {gridCards.map((card, index) => (
             <Card key={index} {...card} update={updateCard(index)} />
           ))}
@@ -85,12 +83,14 @@ export const Grid: FC<GridProps> = ({
           ))}
         </div>
       </div>
-      <button
-        className=" bg-red-500 self-center px-3 py-1 rounded-full hover:scale-[1.1] text-center"
-        onClick={deleteGrid}
-      >
-        X
-      </button>
+      <div className="self-center">
+        <button
+          className=" bg-red-500 px-3 py-1 rounded-full hover:scale-[1.1] text-center"
+          onClick={deleteGrid}
+        >
+          X
+        </button>
+      </div>
     </div>
   );
 };

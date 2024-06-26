@@ -27,7 +27,7 @@ const Card: FC<CardProps> = ({ update, ...cardModel }) => {
   const gridRow = `${y0}/${y1 + 1}`;
   return (
     <div
-      className="rounded-lg bg-slate-50 p-2 border-2 border-sky-600 hover:scale-[1.02] flex flex-col "
+      className="rounded-lg bg-slate-50 p-2 border-2 border-sky-600 hover:scale-[1.02] flex flex-col pointer-events-auto "
       onMouseOut={() => setOnHover(false)}
       onMouseOver={() => setOnHover(true)}
       style={{

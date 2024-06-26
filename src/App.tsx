@@ -1,15 +1,11 @@
+"use client";
 import React from "react";
-import { Main } from "./Main";
+import { Document } from "./Document/Document";
 
-
-function App(props){
- 
-    
-   return(
-    <React.StrictMode>
-       <Main></Main>
-    </React.StrictMode>
-  )
-}
+const App = () => (
+  <React.StrictMode>
+    <Document />
+  </React.StrictMode>
+);
 
 export default App;

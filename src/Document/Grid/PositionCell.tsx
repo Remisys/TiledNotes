@@ -12,7 +12,7 @@ const PositionCell: FC<PositionCellProps> = ({ x, y, onDragStart, onDrop }) => {
   const [draggedHere, setDraggedHere] = useState(false);
   return (
     <div
-      className={` ${draggedHere ? "bg-sky-500" : "border-blue-500"} w-full  hover:scale-105 hover:bg-sky-500 border-2 hover:border-none aspect-square`}
+      className={` ${draggedHere ? "bg-sky-500" : "border-blue-500"} w-full  hover:scale-105 hover:bg-sky-500 border-2 hover:border-none aspect-square pointer-events-auto`}
       style={{ gridColumn, gridRow }}
       onDragStart={onDragStart}
       draggable
