@@ -20,17 +20,11 @@ const styleA = {
 };
 
 type GridProps = {
-  file: string;
   update: (content: CardModel[]) => void;
   deleteGrid: () => void;
 } & GridModel;
 
-export const Grid: FC<GridProps> = ({
-  gridCards,
-  file,
-  update,
-  deleteGrid,
-}) => {
+export const Grid: FC<GridProps> = ({ gridCards = [], update, deleteGrid }) => {
   const freePoints = getFreeSpaces(gridCards);
 
   const onDragStart = (x: number, y: number) => (e: DragEvent) =>

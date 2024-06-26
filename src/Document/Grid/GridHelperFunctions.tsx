@@ -45,7 +45,7 @@ export const getFreeSpaces = (
       pointInsideSquare(p, startPos, endPos)
     );
 
-  const results = [];
+  const results: Point2D[] = [];
   for (let y = 1; y <= h; y++) {
     for (let x = 1; x <= w; x++) {
       if (!isCoordinateOccupied({ x, y })) results.push({ x, y });

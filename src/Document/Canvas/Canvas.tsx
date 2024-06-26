@@ -40,23 +40,26 @@ export const Canvas: FC<CanvasProps> = ({
     if (!onDraw.current) return;
     if (canvasRef.current !== null) {
       const ctx = canvasRef.current.getContext("2d");
-      const currX = e.nativeEvent.offsetX;
-      const currY = e.nativeEvent.offsetY;
+      if (ctx) {
+        const currX = e.nativeEvent.offsetX;
+        const currY = e.nativeEvent.offsetY;
 
-      //Adding new shape
-      ctx.beginPath();
-      ctx.moveTo(prevCoords.x ?? currX, prevCoords.y ?? currY);
-      ctx.lineTo(currX, currY);
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.closePath();
-      setPrevCoords({ x: currX, y: currY });
+        //Adding new shape
+        ctx.beginPath();
+        ctx.moveTo(prevCoords.x ?? currX, prevCoords.y ?? currY);
+        ctx.lineTo(currX, currY);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.closePath();
+        setPrevCoords({ x: currX, y: currY });
+      }
     }
   }
 
   const onInit = () => {
     console.log("Canvas data : ", canvasData);
+    if (!canvasRef.current) return;
     canvasRef.current.width = canvasRef.current.clientWidth;
     canvasRef.current.height = canvasRef.current.clientHeight;
 
@@ -64,7 +67,7 @@ export const Canvas: FC<CanvasProps> = ({
       let ctx = canvasRef.current.getContext("2d");
       const image = new Image();
       image.src = canvasData;
-
+      if (!ctx) return;
       ctx.drawImage(
         image,
         0,
