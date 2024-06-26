@@ -19,7 +19,7 @@ export const Document: FC = () => {
 
   const [sections, setSections] = useState<SectionModel[]>([]);
   useEffect(() => {
-    //loadFile(fileName);
+    loadFile(fileName);
   }, []);
 
   const handleSave = () => {
@@ -29,7 +29,7 @@ export const Document: FC = () => {
   const loadFile = (newFileName: string) => {
     if (newFileName.trim().length > 0) {
       let item = localStorage.getItem(newFileName);
-      if (!item) {
+      if (item !== null) {
         let parsedCards = JSON.parse(item);
         if (!isEqual(parsedCards, sections)) {
           setSections(parsedCards);

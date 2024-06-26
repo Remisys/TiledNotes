@@ -9,14 +9,18 @@ type CanvasProps = {
   deleteCanvas: () => void;
 } & CanvasModel;
 
-export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
+export const Canvas: FC<CanvasProps> = ({
+  canvasData,
+  deleteCanvas,
+  update,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const image = useRef<HTMLImageElement>(null);
   const onDraw = useRef(false);
 
+  //Eventually the coordinates will be element-wise set to another value (undefined) to force react to rerender. Undefined because that is what starting point is unknown
   const [prevCoords, setPrevCoords] = useState<{ x?: number; y?: number }>({
-    x: undefined,
-    y: undefined,
+    x: 0,
+    y: 0,
   });
 
   const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
@@ -28,6 +32,9 @@ export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
   const onMouseUp = () => {
     setPrevCoords({ x: undefined, y: undefined });
     onDraw.current = false;
+    if (canvasRef.current !== null) {
+      update(canvasRef.current.toDataURL()); //store canvas drawing onMouseUp
+    }
   };
   function onMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     if (!onDraw.current) return;
@@ -35,7 +42,7 @@ export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
       const ctx = canvasRef.current.getContext("2d");
       const currX = e.nativeEvent.offsetX;
       const currY = e.nativeEvent.offsetY;
-      ctx.fillStyle = "blue";
+
       //Adding new shape
       ctx.beginPath();
       ctx.moveTo(prevCoords.x ?? currX, prevCoords.y ?? currY);
@@ -45,38 +52,34 @@ export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
       ctx.stroke();
       ctx.closePath();
       setPrevCoords({ x: currX, y: currY });
-
-      //update( model.id, canvas.current.toDataURL());
     }
   }
 
   const onInit = () => {
+    console.log("Canvas data : ", canvasData);
     canvasRef.current.width = canvasRef.current.clientWidth;
     canvasRef.current.height = canvasRef.current.clientHeight;
 
-    if (!image.current) {
-      image.current = new Image();
-    } else {
-      if (image.current.src !== canvasData) {
-        image.current.src = canvasData || "";
-      }
-      if (image.current.src !== "") {
-        let ctx = canvasRef.current.getContext("2d");
+    if (canvasData && canvasData.length > 0) {
+      let ctx = canvasRef.current.getContext("2d");
+      const image = new Image();
+      image.src = canvasData;
 
-        ctx.drawImage(
-          image.current,
-          0,
-          0,
-          canvasRef.current.clientWidth,
-          canvasRef.current.clientHeight
-        );
-      }
-      image.current.src = canvasRef.current.toDataURL();
+      ctx.drawImage(
+        image,
+        0,
+        0,
+        canvasRef.current.clientWidth,
+        canvasRef.current.clientHeight
+      );
     }
   };
+
+  //Rerender the canvas when the ref is populated and set something so that react will rerender
   useEffect(() => {
     onInit();
-  }, []);
+    setPrevCoords({ x: undefined, y: undefined });
+  }, [canvasRef.current]);
 
   return (
     <div className="flex self-stretch justify-center">
