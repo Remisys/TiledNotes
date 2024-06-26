@@ -56,11 +56,7 @@ export const Document: FC = () => {
 
   return (
     <div className="flex flex-col items-center text-white  justify-center h-screen">
-      <Sections
-        fileName={fileName}
-        sections={sections}
-        setSections={setSections}
-      />
+      <Sections sections={sections} setSections={setSections} />
 
       <DocumentButtons
         {...{

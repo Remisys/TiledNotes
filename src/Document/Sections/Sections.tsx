@@ -5,10 +5,9 @@ import { SectionEnum, SectionModel } from "../Document";
 import { Grid } from "../Grid/Grid";
 
 export const Sections: FC<{
-  fileName: string;
   sections: SectionModel[];
   setSections: Dispatch<SetStateAction<SectionModel[]>>;
-}> = ({ fileName, sections, setSections }) => {
+}> = ({ sections, setSections }) => {
   const deleteElement = (id: number) => () =>
     setSections((x) => [...x.slice(0, id), ...x.slice(id + 1)]);
 
@@ -36,7 +35,6 @@ export const Sections: FC<{
                 update={updateGrid(id)}
                 deleteGrid={deleteElement(id)}
                 gridCards={gridCards}
-                file={fileName}
               />
             ) : (
               <Canvas
