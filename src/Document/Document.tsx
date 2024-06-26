@@ -68,7 +68,7 @@ export const Document: FC = () => {
           sections,
         }}
       />
-      <div className="flex flex-row  p-3  fixed left-0 bottom-0 items-center justify-center w-[100%] z-2 bg-white border-t-2 border-t-sky-600">
+      <div className="flex flex-row  p-3  fixed left-0 top-0 items-center justify-center w-[100%] z-2 bg-white border-b-2 border-t-sky-600">
         <input
           className=" border-b-2 border-green-700 text-[18px] py-2 px-3 mx-2 whitespace-nowrap text-black appearance-none outline-none"
           value={fileName}

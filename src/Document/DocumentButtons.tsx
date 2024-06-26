@@ -15,7 +15,7 @@ export const DocumentButtons: FC<{
   handleSave,
   sections,
 }) => (
-  <div className="self-stretch flex justify-center mb-20 self-trans ">
+  <div className="self-stretch flex justify-center pb-5">
     <div className="px-5 grow  max-w-[800px] flex justify-between">
       <Link href={`./#${sections.length}`} scroll={false}>
         <button

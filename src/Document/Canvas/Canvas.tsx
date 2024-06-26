@@ -58,7 +58,6 @@ export const Canvas: FC<CanvasProps> = ({
   }
 
   const onInit = () => {
-    console.log("Canvas data : ", canvasData);
     if (!canvasRef.current) return;
     canvasRef.current.width = canvasRef.current.clientWidth;
     canvasRef.current.height = canvasRef.current.clientHeight;
