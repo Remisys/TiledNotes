@@ -30,7 +30,7 @@ export const Sections: FC<{
     <div className="m-10 flex flex-col items-center w-[100%] overflow-y-auto ">
       <div className="pt-[100px] md:pt-[125px] xl:pt-[150px]   pb-[0px] w-full justify-center  ">
         {sections.map(({ type, gridCards, canvasData }, id) => (
-          <div className="flex flex-col   py-4" id={id + ""}>
+          <div className="flex flex-col   py-4" id={`${id}`}>
             {type === SectionEnum.Grid ? (
               <Grid
                 update={updateGrid(id)}

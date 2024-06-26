@@ -79,7 +79,7 @@ export const Canvas: FC<CanvasProps> = ({ canvasData, deleteCanvas }) => {
   }, []);
 
   return (
-    <div className="flex self-stretch justify-center pointer-events-none">
+    <div className="flex self-stretch justify-center">
       <div className="grow  max-w-[800px] aspect-video p-5">
         <canvas
           ref={canvasRef}
