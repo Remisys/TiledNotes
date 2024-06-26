@@ -27,6 +27,7 @@ export const Document: FC = () => {
   };
 
   const loadFile = (newFileName: string) => {
+    setSections([]);
     if (newFileName.trim().length > 0) {
       let item = localStorage.getItem(newFileName);
       if (item !== null) {
