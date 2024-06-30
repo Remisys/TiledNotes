@@ -36,7 +36,7 @@ export const Canvas: FC<CanvasProps> = ({
       update(canvasRef.current.toDataURL()); //store canvas drawing onMouseUp
     }
   };
-  function onMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
+  const onMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!onDraw.current) return;
     if (canvasRef.current !== null) {
       const ctx = canvasRef.current.getContext("2d");
@@ -55,7 +55,7 @@ export const Canvas: FC<CanvasProps> = ({
         setPrevCoords({ x: currX, y: currY });
       }
     }
-  }
+  };
 
   const onInit = () => {
     if (!canvasRef.current) return;
@@ -84,11 +84,11 @@ export const Canvas: FC<CanvasProps> = ({
   }, [canvasRef.current]);
 
   return (
-    <div className="flex self-stretch justify-center">
+    <div className="flex self-stretch justify-center ">
       <div className="grow  max-w-[800px] aspect-video p-5">
         <canvas
           ref={canvasRef}
-          className="w-full h-full border-solid border-2 border-indigo-600"
+          className="w-full h-full border-solid border-2  border-sky-600 rounded-md bg-white/50"
           onMouseDown={onMouseDown}
           onMouseUp={onMouseUp}
           onMouseMove={onMouseMove}
@@ -96,7 +96,7 @@ export const Canvas: FC<CanvasProps> = ({
       </div>
       <div className="self-center">
         <button
-          className=" bg-red-500 px-3 py-1 rounded-full hover:scale-[1.1] text-center"
+          className=" bg-red-500 px-3 py-1 rounded-full hover:scale-[1.1] text-center text-white "
           onClick={deleteCanvas}
         >
           X

@@ -16,7 +16,7 @@ export const DocumentButtons: FC<{
   sections,
 }) => (
   <div className="self-stretch flex justify-center pb-5">
-    <div className="px-5 grow  max-w-[800px] flex justify-between">
+    <div className="px-5 grow  max-w-[800px] flex justify-between text-white">
       <Link href={`./#${sections.length}`} scroll={false}>
         <button
           className=" rounded-md bg-sky-600 text-[18px] py-2 px-3  whitespace-nowrap  hover:scale-95"

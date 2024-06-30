@@ -56,28 +56,42 @@ export const Document: FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center text-white  justify-center h-screen">
-      <Sections sections={sections} setSections={setSections} />
-
-      <DocumentButtons
-        {...{
-          handleClickDraw,
-          handleRemove,
-          handleSave,
-          handleClickNew,
-          sections,
-        }}
-      />
-      <div className="flex flex-row  p-3  fixed left-0 top-0 items-center justify-center w-[100%] z-2 bg-white border-b-2 border-t-sky-600">
-        <input
-          className=" border-b-2 border-green-700 text-[18px] py-2 px-3 mx-2 whitespace-nowrap text-black appearance-none outline-none"
-          value={fileName}
-          placeholder="Your File"
-          onChange={(e) => {
-            handleFileName(e.target.value);
-          }}
-        />
+    <>
+      <Background />
+      <div className="flex items-stretch h-screen w-screen ">
+        <div className="flex flex-col items-stretch grow overflow-y-auto">
+          <div className="flex justify-center items-center py-10">
+            <input
+              value={fileName}
+              className="p-3 border-2 border-black max-w-[800px] grow rounded-md bg-white/50  text-lg"
+              onChange={(e) => handleFileName(e.target.value)}
+            />
+          </div>
+          <Sections sections={sections} setSections={setSections} />
+          <DocumentButtons
+            {...{
+              handleClickDraw,
+              handleRemove,
+              handleSave,
+              handleClickNew,
+              sections,
+            }}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
+};
+
+const Background = () => (
+  <div
+    className="w-screen h-screen fixed top-0 left-0 opacity-30 -z-50"
+    style={{
+      background:
+        "conic-gradient(from 3.1416rad at 20% 50%, #e66465, #9198e5,  #e66465)",
+    }}
+  ></div>
+);
+const Sidebar: FC = () => {
+  return <div className="lg:w-[200px] h-full p-5 bg-white/30 ">Sidebar</div>;
 };

@@ -26,8 +26,8 @@ export const Sections: FC<{
     ]);
 
   return (
-    <div className="m-10 flex flex-col items-center w-[100%] overflow-y-auto grow">
-      <div className="py-10  w-full justify-center  ">
+    <div className="flex flex-col items-center grow">
+      <div className="  w-full justify-center  ">
         {sections.map(({ type, gridCards, canvasData }, id) => (
           <div className="flex flex-col   py-4" id={`${id}`} key={id}>
             {type === SectionEnum.Grid ? (
